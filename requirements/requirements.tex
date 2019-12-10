@@ -1,0 +1,88 @@
+\documentclass[12pt]{article}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{graphics}
+%%\usepackage{wrapfig}
+\usepackage{braket}
+\usepackage{cite}
+%\usepackage{bibspacing}
+%\setlength{\bibspacing}{\baselineskip}
+\usepackage{mdwlist}
+
+
+
+\usepackage[pdftex]{graphicx}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{wasysym}
+\usepackage{setspace}
+\usepackage{color}
+\usepackage{nicefrac}
+\usepackage{braket}
+\usepackage{hyperref}
+
+
+
+\newcommand{\figref}[1]{Fig.~\ref{fig:#1}}
+\newcommand{\Figref}[1]{Figure~\ref{fig:#1}}
+\newcommand{\figreftwo}[2]{Figs.~\ref{fig:#1} and~\ref{fig:#2}}
+\newcommand{\Figreftwo}[2]{Figures~\ref{fig:#1} and~\ref{fig:#2}}
+\renewcommand{\eqref}[1]{Eq.~(\ref{eq:#1})}
+\newcommand{\eqreftwo}[2]{Eqs.~(\ref{eq:#1}--\ref{eq:#2})}
+\newcommand{\Eqref}[1]{Equation~(\ref{eq:#1})}
+\newcommand{\citeasnoun}[1]{Ref.~\onlinecite{#1}}
+\newcommand{\secref}[1]{Sec.~\ref{sec:#1}}
+\newcommand{\Secref}[1]{Section~\ref{sec:#1}}
+\newcommand{\tauk}[2]{\tau_{#1,#2}}
+\newcommand{\E}[2]{E_{#1 #2}}
+\newcommand{\chiany}[1]{\chi^{(#1)}}
+\newcommand{\chitwo}{\chiany{2}}
+\newcommand{\chithree}{\chiany{3}}
+\newcommand{\chiell}{\chiany{\ell}}
+\newcommand{\sector}[1]{\begin{center} \textbf{#1} \end{center}}
+\newcommand{\Gev}{\text{GeV}}
+\newcommand{\Mev}{\text{MeV}}
+\newcommand{\paren}[1]{ \left( #1 \right) }
+\newcommand{\bracket}[1]{\left[ #1 \right]}
+
+
+\newcommand{\bfnoindent}[1]{\noindent \textbf{#1}}
+
+\begin{document}
+
+\section{BoAPyAnalysis}
+
+This document is a detailed requirements, and design document for the Python Bank of America Analysis Tool (BoAPyAnalysis).
+
+
+\subsection{Requirements}
+
+\begin{itemize}
+\item Ability to search for expenses by query of regular expression.
+\item Pandas for learning experience and for querying data.
+\item date filters.
+\item cost threshold filters (low and high).
+\item Tab for periodic analysis (finding scheduled expenses etc).
+\item Potentially add anomaly detection (machne learning?)
+\item some ploting functionality as a function of time (TODO: be more clear)
+\end{itemize}
+
+
+\subsection{Future Improvements}
+
+
+\subsection{Products in use}
+
+\begin{itemize}
+\item Pyqt
+\item pandas
+\item numpy
+\item sci-pi
+\end{itemize}
+
+
+\end{document} 
+
+% LocalWords:  usefull leptonic dq dt ndiffeq baryonic antibaryon
