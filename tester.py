@@ -3,6 +3,7 @@ from analasisAPI.queries import filterDataFrameByRegex
 from analasisAPI.queries import filterDataFrameByDate
 from analasisAPI.queries import filterDataFrameByAmount
 from analasisAPI.queries import queryBankDataFrame
+from analasisAPI.plotUtilities import plotDataFrameTimeSeriesCol
 import datetime
 
 
@@ -15,10 +16,10 @@ dataFrame = LoadFile(filepath)
 regexDF = filterDataFrameByRegex(dataFrame,"uber")
 #print(regexDF)
 
-range1filter = filterDataFrameByDate(regexDF,[datetime.datetime(2018,12,2),datetime.datetime(2019,12,22)])
+range1filter = filterDataFrameByDate(dataFrame,[datetime.datetime(2018,12,2),datetime.datetime(2019,12,22)])
 
 
-range2filter = filterDataFrameByAmount(range1filter,[-20.0,True])
+range2filter = filterDataFrameByAmount(range1filter,[-100.0,True])
 
 # print(range2filter)
 
@@ -27,8 +28,10 @@ range2filter = filterDataFrameByAmount(range1filter,[-20.0,True])
 
 
 # uber costs in the last six months
-print(queryBankDataFrame(dataFrame, "uber",dateRange=[datetime.datetime(2019,9,10),datetime.datetime(2019,12,10)]))
+# print(queryBankDataFrame(dataFrame, "uber",dateRange=[datetime.datetime(2019,6,10),datetime.datetime(2019,12,10)]))
 
-uberCost = queryBankDataFrame(dataFrame, "uber",dateRange=[datetime.datetime(2019,9,10),datetime.datetime(2019,12,10)])
+queryCost = queryBankDataFrame(range2filter, "micro",dateRange=[datetime.datetime(2019,9,10),datetime.datetime(2019,12,10)])
 
-print(uberCost.sum())
+print(queryCost)
+print(range2filter.to_string())
+plotDataFrameTimeSeriesCol(range2filter,'Date','Amount')
