@@ -1,7 +1,14 @@
 import pandas as pd
 
+
+
+DATE_COL = 'Date'
+DESC_COL = 'Description'
+AMNT_COL = 'Amount'
+BAL_COL = 'Running Bal.'
+
 # the current BOA file has six useless rows so we do not read those
-# TODO: make this more robust
+# TODO: make this more robust for different bank formats
 def LoadFile(filePath):
     '''
         Input:

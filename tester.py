@@ -8,7 +8,9 @@ import datetime
 
 
 # This should be the path to the file of your untouched BOA statement
-filepath = "/home/jaimevrl/Documents/Finance/stmt.csv"
+#filepath = "/home/jaimevrl/Documents/Finance/stmt.csv"
+filepath = "sample.csv"
+
 
 dataFrame = LoadFile(filepath)
 

@@ -5,10 +5,10 @@ import sys
 # for small data sets using three function calls is sufficiently optimal
 
 #constants in use to locate columns
-DATE_COL = 'Date'
-DESC_COL = 'Description'
-AMNT_COL = 'Amount'
-BAL_COL = 'Running Bal.'
+from .fileLoader import DATE_COL
+from .fileLoader import DESC_COL
+from .fileLoader import AMNT_COL
+from .fileLoader import BAL_COL 
 
 
 def filterDataFrameColByPred(dataFrame, columnName,predicate):
