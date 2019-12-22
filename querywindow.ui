@@ -62,16 +62,22 @@
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
            <widget class="QLabel" name="label_7">
+            <property name="maximumSize">
+             <size>
+              <width>352</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string> Query:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QTextEdit" name="textEdit_3">
+           <widget class="QTextEdit" name="queryButton">
             <property name="maximumSize">
              <size>
-              <width>16777215</width>
+              <width>352</width>
               <height>44</height>
              </size>
             </property>
@@ -85,7 +91,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBox">
+           <widget class="QCheckBox" name="isFilterByDate">
+            <property name="maximumSize">
+             <size>
+              <width>352</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>Filter By Date</string>
             </property>
@@ -95,7 +107,7 @@
            <widget class="QLabel" name="label_2">
             <property name="maximumSize">
              <size>
-              <width>16777215</width>
+              <width>352</width>
               <height>44</height>
              </size>
             </property>
@@ -105,13 +117,20 @@
            </widget>
           </item>
           <item>
-           <widget class="QDateEdit" name="startDate"/>
+           <widget class="QDateEdit" name="startDate">
+            <property name="maximumSize">
+             <size>
+              <width>352</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_3">
             <property name="maximumSize">
              <size>
-              <width>16777215</width>
+              <width>352</width>
               <height>44</height>
              </size>
             </property>
@@ -121,7 +140,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QDateEdit" name="endDate"/>
+           <widget class="QDateEdit" name="endDate">
+            <property name="maximumSize">
+             <size>
+              <width>352</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="Line" name="line">
@@ -131,7 +157,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBox_2">
+           <widget class="QCheckBox" name="isFilterRange">
+            <property name="maximumSize">
+             <size>
+              <width>352</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>FIlter by range</string>
             </property>
@@ -141,7 +173,7 @@
            <widget class="QLabel" name="label_4">
             <property name="maximumSize">
              <size>
-              <width>16777215</width>
+              <width>352</width>
               <height>44</height>
              </size>
             </property>
@@ -154,7 +186,7 @@
            <widget class="QLabel" name="label_5">
             <property name="maximumSize">
              <size>
-              <width>16777215</width>
+              <width>352</width>
               <height>44</height>
              </size>
             </property>
@@ -164,7 +196,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox">
+           <widget class="QDoubleSpinBox" name="lowSpinBox">
+            <property name="maximumSize">
+             <size>
+              <width>352</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="maximum">
              <double>500000.000000000000000</double>
             </property>
@@ -174,7 +212,7 @@
            <widget class="QLabel" name="label_6">
             <property name="maximumSize">
              <size>
-              <width>16777215</width>
+              <width>352</width>
               <height>44</height>
              </size>
             </property>
@@ -184,7 +222,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+           <widget class="QDoubleSpinBox" name="highSpinBox">
+            <property name="maximumSize">
+             <size>
+              <width>352</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="maximum">
              <double>500000.000000000000000</double>
             </property>
@@ -206,14 +250,26 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
-             <widget class="QPushButton" name="pushButton_2">
+             <widget class="QPushButton" name="applyButton">
+              <property name="maximumSize">
+               <size>
+                <width>176</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="text">
                <string>Apply Filter</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="plotButton">
+              <property name="maximumSize">
+               <size>
+                <width>176</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="text">
                <string>Plot</string>
               </property>
