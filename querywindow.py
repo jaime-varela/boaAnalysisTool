@@ -11,8 +11,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 #custom headers
 from PyQt5.QtWidgets import QFileDialog
 from analasisAPI.fileLoader import LoadFile 
-
-
+from analasisAPI.fileLoader import DESC_COL, DATE_COL, AMNT_COL, BAL_COL
+from uiUtilities.pandasModel import PandasModel
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -150,6 +150,7 @@ class Ui_MainWindow(object):
 
         # custom code begin here
         self.dataFrame = []
+        self.viewDataFrame = []
         self.actionLoad.triggered.connect(lambda: self.loadFile())
 
     def retranslateUi(self, MainWindow):
@@ -172,8 +173,18 @@ class Ui_MainWindow(object):
 
     # begin user defined functions
     def loadTable(self):
+        '''
+            Loads the viewDataFrame onto the table, the viewDataFrame must be processed before this function
+            is called.
+        '''
+        print("here")
+        model = PandasModel(self.viewDataFrame)
+        print("after model")
+        self.tableView.setModel(model)
+        print("whaaat")
         print(self.dataFrame)
         return 0.0
+    
     def loadFile(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
@@ -186,10 +197,13 @@ class Ui_MainWindow(object):
         if fileName:
             try:
                 self.dataFrame = LoadFile(fileName)
+                self.viewDataFrame = self.dataFrame
             except:
                 error_dialog = QtWidgets.QErrorMessage()
                 error_dialog.showMessage('Invalid File!')
                 return
+            self.viewDataFrame = self.dataFrame.sort_values(by=[DATE_COL])
+            print("before filename")
             self.loadTable()
 
         

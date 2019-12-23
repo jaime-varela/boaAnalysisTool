@@ -150,6 +150,7 @@ class Ui_MainWindow(object):
 
         # custom code begin here
         self.dataFrame = []
+        self.viewDataFrame = []
         self.actionLoad.triggered.connect(lambda: self.loadFile())
 
     def retranslateUi(self, MainWindow):
