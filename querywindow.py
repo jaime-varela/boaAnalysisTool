@@ -282,8 +282,9 @@ class Ui_MainWindow(object):
         plotBalanceAndCosts(self.viewDataFrame,DATE_COL,AMNT_COL,BAL_COL)
 
     def loadSummary(self):
+        if self.viewDataFrame is None:
+            return
         summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
-
 
         summaryText = "total cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].sum()) + "\n"
         summaryText += "average cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].mean()) + "\n"
