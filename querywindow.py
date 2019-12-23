@@ -17,7 +17,9 @@ from uiUtilities.pandasModel import PandasModel
 from analasisAPI.queries import queryBankDataFrame
 from analasisAPI.plotUtilities import plotBalanceAndCosts
 
-
+def npNum2Str(number):
+    import numpy as np
+    return str( np.round(number,decimals = 2) ) 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -283,8 +285,13 @@ class Ui_MainWindow(object):
         summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
 
 
-        summaryText = "total cost: " + str( (-1.0 * summaryDF[AMNT_COL].sum()) ) + "\n"
-        summaryText += "average cost: " + str( (-1.0 * summaryDF[AMNT_COL].mean()) ) + "\n"
+        summaryText = "total cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].sum()) + "\n"
+        summaryText += "average cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].mean()) + "\n"
+        summaryText += "median cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].median()) + "\n"
+        summaryText += "number of cost: " + str(summaryDF[AMNT_COL].count()) +"\n"
+        summaryText += "highest cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].min()) + "\n"
+        summaryText += "minimum cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].max()) + "\n"
+
         self.summaryText.setText(summaryText)
 
 
