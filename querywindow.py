@@ -9,10 +9,11 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 #custom headers
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from analasisAPI.fileLoader import LoadFile 
 from analasisAPI.fileLoader import DESC_COL, DATE_COL, AMNT_COL, BAL_COL
 from uiUtilities.pandasModel import PandasModel
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -111,6 +112,15 @@ class Ui_MainWindow(object):
         self.highSpinBox.setMaximum(500000.0)
         self.highSpinBox.setObjectName("highSpinBox")
         self.verticalLayout_7.addWidget(self.highSpinBox)
+        self.line_3 = QtWidgets.QFrame(self.centralwidget)
+        self.line_3.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_3.setObjectName("line_3")
+        self.verticalLayout_7.addWidget(self.line_3)
+        self.summaryText = QtWidgets.QLabel(self.centralwidget)
+        self.summaryText.setText("")
+        self.summaryText.setObjectName("summaryText")
+        self.verticalLayout_7.addWidget(self.summaryText)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_7.addItem(spacerItem)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -149,9 +159,37 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         # custom code begin here
+        self.startDate.setReadOnly(True)
+        self.endDate.setReadOnly(True)
+        self.lowSpinBox.setReadOnly(True)
+        self.highSpinBox.setReadOnly(True)
+        self.isFilterByDate.stateChanged.connect(lambda: self.toggleDate())
+        self.isFilterRange.stateChanged.connect(lambda: self.toggleAmount())
+
+        # file loader
         self.dataFrame = []
         self.viewDataFrame = []
         self.actionLoad.triggered.connect(lambda: self.loadFile())
+
+        # apply button
+        self.applyButton.clicked.connect(lambda: self.applyQuery())
+
+    def toggleDate(self):
+        if self.isFilterByDate.isChecked():
+            self.startDate.setReadOnly(False)
+            self.endDate.setReadOnly(False)
+        else:
+            self.startDate.setReadOnly(True)
+            self.endDate.setReadOnly(True)
+
+    def toggleAmount(self):
+        if self.isFilterRange.isChecked():
+            self.lowSpinBox.setReadOnly(False)
+            self.highSpinBox.setReadOnly(False)
+        else:
+            self.lowSpinBox.setReadOnly(True)
+            self.highSpinBox.setReadOnly(True)
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -171,18 +209,15 @@ class Ui_MainWindow(object):
         self.actionLoad.setText(_translate("MainWindow", "Load..."))
         self.actionInfo.setText(_translate("MainWindow", "Info"))
 
-    # begin user defined functions
+        # begin user defined functions
     def loadTable(self):
         '''
             Loads the viewDataFrame onto the table, the viewDataFrame must be processed before this function
             is called.
         '''
-        print("here")
         model = PandasModel(self.viewDataFrame)
-        print("after model")
         self.tableView.setModel(model)
-        print("whaaat")
-        print(self.dataFrame)
+        self.tableView.setSortingEnabled(True)
         return 0.0
     
     def loadFile(self):
@@ -197,17 +232,21 @@ class Ui_MainWindow(object):
         if fileName:
             try:
                 self.dataFrame = LoadFile(fileName)
-                self.viewDataFrame = self.dataFrame
+                self.viewDataFrame = self.dataFrame.sort_values(by=[DATE_COL])
             except:
-                error_dialog = QtWidgets.QErrorMessage()
-                error_dialog.showMessage('Invalid File!')
-                return
-            self.viewDataFrame = self.dataFrame.sort_values(by=[DATE_COL])
-            print("before filename")
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText("File type not supported.")
+                msgBox.setWindowTitle("Invalid File")
+                msgBox.show()
+
             self.loadTable()
 
-        
-    
+    def applyQuery(self):
+        return
+        # if self.isFilterByDate.isChecked() and self.isFilterRange.isChecked():
+
+
 
 
 if __name__ == "__main__":
