@@ -171,8 +171,8 @@ class Ui_MainWindow(object):
         self.isFilterRange.stateChanged.connect(lambda: self.toggleAmount())
 
         # file loader
-        self.dataFrame = None
-        self.viewDataFrame = None
+        self.dataFrame = []
+        self.viewDataFrame = []
         self.actionLoad.triggered.connect(lambda: self.loadFile())
 
         # apply button
@@ -222,8 +222,6 @@ class Ui_MainWindow(object):
             Loads the viewDataFrame onto the table, the viewDataFrame must be processed before this function
             is called.
         '''
-        if self.viewDataFrame is None:
-            return
         model = PandasModel(self.viewDataFrame)
         self.tableView.setModel(model)
         self.tableView.setSortingEnabled(True)
@@ -236,7 +234,7 @@ class Ui_MainWindow(object):
                         None,
                         "QFileDialog.getOpenFileName()",
                         "",
-                        "CSV Files (*.csv);;Text Files (*.txt);;All Files (*)",
+                        "All Files (*);;CSV Files (*.csv);;Text Files (*.txt)",
                         options=options)
         if fileName:
             try:
@@ -251,7 +249,6 @@ class Ui_MainWindow(object):
                 msgBox.show()
 
             self.loadTable()
-            self.loadSummary()
 
     def applyQuery(self):
         queryValue = self.queryButton.toPlainText()
@@ -274,18 +271,9 @@ class Ui_MainWindow(object):
         else:
             self.viewDataFrame = self.dataFrame
         self.loadTable()
-        self.loadSummary()
 
     def showPlots(self):
         plotBalanceAndCosts(self.viewDataFrame,DATE_COL,AMNT_COL,BAL_COL)
-
-    def loadSummary(self):
-        summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
-
-
-        summaryText = "total cost: " + str( (-1.0 * summaryDF[AMNT_COL].sum()) ) + "\n"
-        summaryText += "average cost: " + str( (-1.0 * summaryDF[AMNT_COL].mean()) ) + "\n"
-        self.summaryText.setText(summaryText)
 
 
 
