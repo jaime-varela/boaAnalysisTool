@@ -9,3 +9,6 @@ The program examines the description fields and groups the expenses according to
 1.) Determine if the signal is periodic.  If not, exit
 2.) Determine the periodicity of the signal (weekly, monthly, daily, etc.)
 3.) populate the periodic signal container (this is what is displayed on the table)
+
+See the following for a basic examination:
+https://ourcodingclub.github.io/2019/01/07/pandas-time-series.html#periodicity
