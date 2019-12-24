@@ -313,6 +313,7 @@
      <string>File</string>
     </property>
     <addaction name="actionLoad"/>
+    <addaction name="actionExport"/>
     <addaction name="actionInfo"/>
    </widget>
    <widget class="QMenu" name="menuview">
@@ -356,6 +357,11 @@
   <action name="actionall">
    <property name="text">
     <string>all</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export...</string>
    </property>
   </action>
  </widget>

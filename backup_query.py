@@ -149,6 +149,8 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
+        self.menuview = QtWidgets.QMenu(self.menubar)
+        self.menuview.setObjectName("menuview")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -157,12 +159,26 @@ class Ui_MainWindow(object):
         self.actionLoad.setObjectName("actionLoad")
         self.actionInfo = QtWidgets.QAction(MainWindow)
         self.actionInfo.setObjectName("actionInfo")
+        self.actionbalances = QtWidgets.QAction(MainWindow)
+        self.actionbalances.setObjectName("actionbalances")
+        self.actiondebits = QtWidgets.QAction(MainWindow)
+        self.actiondebits.setObjectName("actiondebits")
+        self.actiondeposit_plot = QtWidgets.QAction(MainWindow)
+        self.actiondeposit_plot.setObjectName("actiondeposit_plot")
+        self.actionall = QtWidgets.QAction(MainWindow)
+        self.actionall.setObjectName("actionall")
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionInfo)
+        self.menuview.addAction(self.actionall)
+        self.menuview.addAction(self.actionbalances)
+        self.menuview.addAction(self.actiondebits)
+        self.menuview.addAction(self.actiondeposit_plot)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuview.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
 
         # custom code begin here
         self.startDate.setReadOnly(True)
@@ -213,10 +229,15 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", " low:"))
         self.label_6.setText(_translate("MainWindow", " high:"))
         self.applyButton.setText(_translate("MainWindow", "Apply Filter"))
-        self.plotButton.setText(_translate("MainWindow", "Plot"))
+        self.plotButton.setText(_translate("MainWindow", "Cost Plot"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuview.setTitle(_translate("MainWindow", "view"))
         self.actionLoad.setText(_translate("MainWindow", "Load..."))
         self.actionInfo.setText(_translate("MainWindow", "Info"))
+        self.actionbalances.setText(_translate("MainWindow", "deposits"))
+        self.actiondebits.setText(_translate("MainWindow", "debits"))
+        self.actiondeposit_plot.setText(_translate("MainWindow", "deposit plot"))
+        self.actionall.setText(_translate("MainWindow", "all"))
 
         # begin user defined functions
     def loadTable(self):
@@ -312,9 +333,6 @@ class Ui_MainWindow(object):
 
 
         self.summaryText.setText(summaryText)
-
-
-
 
 
 if __name__ == "__main__":

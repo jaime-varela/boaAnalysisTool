@@ -16,10 +16,17 @@ from uiUtilities.pandasModel import PandasModel
 
 from analasisAPI.queries import queryBankDataFrame
 from analasisAPI.plotUtilities import plotBalanceAndCosts
+from enum import Enum
 
 def npNum2Str(number):
     import numpy as np
     return str( np.round(number,decimals = 2) ) 
+
+
+class tableDisplayMode(Enum):
+    ALL = 1
+    DEPOSITS = 2
+    DEBITS = 3
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -167,7 +174,10 @@ class Ui_MainWindow(object):
         self.actiondeposit_plot.setObjectName("actiondeposit_plot")
         self.actionall = QtWidgets.QAction(MainWindow)
         self.actionall.setObjectName("actionall")
+        self.actionExport = QtWidgets.QAction(MainWindow)
+        self.actionExport.setObjectName("actionExport")
         self.menuFile.addAction(self.actionLoad)
+        self.menuFile.addAction(self.actionExport)
         self.menuFile.addAction(self.actionInfo)
         self.menuview.addAction(self.actionall)
         self.menuview.addAction(self.actionbalances)
@@ -179,8 +189,12 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.customizedInit()
 
-        # custom code begin here
+    def customizedInit(self):
+        #--------------------------------------------------------------------------
+        # ------------------------custom code begin here --------------------------
+        #--------------------------------------------------------------------------
         self.startDate.setReadOnly(True)
         self.endDate.setReadOnly(True)
         self.lowSpinBox.setReadOnly(True)
@@ -193,11 +207,26 @@ class Ui_MainWindow(object):
         self.viewDataFrame = None
         self.actionLoad.triggered.connect(lambda: self.loadFile())
 
+        # export menu
+        self.actionExport.triggered.connect(lambda: self.exportFile())
+
         # apply button
         self.applyButton.clicked.connect(lambda: self.applyQuery())
 
         # plot button
         self.plotButton.clicked.connect(lambda: self.showPlots())
+
+        # --View Menu
+        self.tableDisplayMode = tableDisplayMode.ALL
+
+        # deposits
+        self.actionbalances.triggered.connect(lambda: self.loadDeposits())
+
+        # debits
+        self.actiondebits.triggered.connect(lambda: self.loadDebits())
+
+        # all
+        self.actionall.triggered.connect(lambda: self.loadAll())
 
     def toggleDate(self):
         if self.isFilterByDate.isChecked():
@@ -215,6 +244,9 @@ class Ui_MainWindow(object):
             self.lowSpinBox.setReadOnly(True)
             self.highSpinBox.setReadOnly(True)
 
+    def clearQuerySelection(self):
+        # clear the query here
+        return
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -238,8 +270,33 @@ class Ui_MainWindow(object):
         self.actiondebits.setText(_translate("MainWindow", "debits"))
         self.actiondeposit_plot.setText(_translate("MainWindow", "deposit plot"))
         self.actionall.setText(_translate("MainWindow", "all"))
+        self.actionExport.setText(_translate("MainWindow", "Export..."))
 
-        # begin user defined functions
+
+    #-------------------------------------------------------------
+    #--------------- begin user defined functions ----------------
+    #-------------------------------------------------------------
+
+    def loadDeposits(self):
+        self.tableDisplayMode = tableDisplayMode.DEPOSITS
+        self.viewDataFrame =  self.dataFrame[self.dataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
+        self.loadTable()
+        self.loadSummary()
+
+    def loadDebits(self):
+        self.tableDisplayMode = tableDisplayMode.DEBITS
+        self.viewDataFrame =  self.dataFrame[self.dataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
+        self.loadTable()
+        self.loadSummary()
+    
+    def loadAll(self):
+        self.tableDisplayMode = tableDisplayMode.DEBITS
+        self.viewDataFrame =  self.dataFrame
+        self.loadTable()
+        self.loadSummary(loadDeposit=True)
+
+
+
     def loadTable(self):
         '''
             Loads the viewDataFrame onto the table, the viewDataFrame must be processed before this function
@@ -312,16 +369,18 @@ class Ui_MainWindow(object):
         if self.viewDataFrame[AMNT_COL].count() == 0:
             return
         summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
-        summaryText = " ----- Costs ----\n" 
-        summaryText += "total cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].sum()) + "\n"
-        summaryText += "average cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].mean()) + "\n"
-        summaryText += "median cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].median()) + "\n"
-        summaryText += "number of cost: " + str(summaryDF[AMNT_COL].count()) +"\n"
-        summaryText += "highest cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].min()) + "\n"
-        summaryText += "minimum cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].max()) + "\n"
+        summaryText = ""
+        if self.tableDisplayMode != tableDisplayMode.DEPOSITS:
+            summaryText += " ----- Costs ----\n" 
+            summaryText += "total cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].sum()) + "\n"
+            summaryText += "average cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].mean()) + "\n"
+            summaryText += "median cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].median()) + "\n"
+            summaryText += "number of cost: " + str(summaryDF[AMNT_COL].count()) +"\n"
+            summaryText += "highest cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].min()) + "\n"
+            summaryText += "minimum cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].max()) + "\n"
 
         # deposits
-        if loadDeposit:
+        if loadDeposit or (self.tableDisplayMode == tableDisplayMode.DEPOSITS):
             summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
             summaryText += "\n ----- Deposits ----\n" 
             summaryText += "total deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].sum()) + "\n"
@@ -333,6 +392,10 @@ class Ui_MainWindow(object):
 
 
         self.summaryText.setText(summaryText)
+
+    def exportFile(self):
+        return
+
 
 
 if __name__ == "__main__":
