@@ -229,6 +229,10 @@ class Ui_MainWindow(object):
         model = PandasModel(self.viewDataFrame)
         self.tableView.setModel(model)
         self.tableView.setSortingEnabled(True)
+
+        # -- sizing --
+        self.tableView.setColumnWidth(1, 100)
+        self.tableView.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         return 0.0
     
     def loadFile(self):
