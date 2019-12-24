@@ -284,6 +284,8 @@ class Ui_MainWindow(object):
     def loadSummary(self):
         if self.viewDataFrame is None:
             return
+        if self.viewDataFrame[AMNT_COL].count() == 0:
+            return
         summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
 
         summaryText = "total cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].sum()) + "\n"
