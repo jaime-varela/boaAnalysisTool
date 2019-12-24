@@ -149,6 +149,8 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
+        self.menuview = QtWidgets.QMenu(self.menubar)
+        self.menuview.setObjectName("menuview")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -157,12 +159,26 @@ class Ui_MainWindow(object):
         self.actionLoad.setObjectName("actionLoad")
         self.actionInfo = QtWidgets.QAction(MainWindow)
         self.actionInfo.setObjectName("actionInfo")
+        self.actionbalances = QtWidgets.QAction(MainWindow)
+        self.actionbalances.setObjectName("actionbalances")
+        self.actiondebits = QtWidgets.QAction(MainWindow)
+        self.actiondebits.setObjectName("actiondebits")
+        self.actiondeposit_plot = QtWidgets.QAction(MainWindow)
+        self.actiondeposit_plot.setObjectName("actiondeposit_plot")
+        self.actionall = QtWidgets.QAction(MainWindow)
+        self.actionall.setObjectName("actionall")
         self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionInfo)
+        self.menuview.addAction(self.actionall)
+        self.menuview.addAction(self.actionbalances)
+        self.menuview.addAction(self.actiondebits)
+        self.menuview.addAction(self.actiondeposit_plot)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuview.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
 
         # custom code begin here
         self.startDate.setReadOnly(True)
@@ -204,7 +220,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "Query Bank Statement"))
-        self.label_7.setText(_translate("MainWindow", " Query:"))
+        self.label_7.setText(_translate("MainWindow", " Query (regex):"))
         self.isFilterByDate.setText(_translate("MainWindow", "Filter By Date"))
         self.label_2.setText(_translate("MainWindow", " Start Date"))
         self.label_3.setText(_translate("MainWindow", " End Date"))
@@ -213,10 +229,15 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", " low:"))
         self.label_6.setText(_translate("MainWindow", " high:"))
         self.applyButton.setText(_translate("MainWindow", "Apply Filter"))
-        self.plotButton.setText(_translate("MainWindow", "Plot"))
+        self.plotButton.setText(_translate("MainWindow", "Cost Plot"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuview.setTitle(_translate("MainWindow", "view"))
         self.actionLoad.setText(_translate("MainWindow", "Load..."))
         self.actionInfo.setText(_translate("MainWindow", "Info"))
+        self.actionbalances.setText(_translate("MainWindow", "deposits"))
+        self.actiondebits.setText(_translate("MainWindow", "debits"))
+        self.actiondeposit_plot.setText(_translate("MainWindow", "deposit plot"))
+        self.actionall.setText(_translate("MainWindow", "all"))
 
         # begin user defined functions
     def loadTable(self):
@@ -257,7 +278,7 @@ class Ui_MainWindow(object):
                 msgBox.show()
 
             self.loadTable()
-            self.loadSummary()
+            self.loadSummary(loadDeposit=True)
 
     def applyQuery(self):
         queryValue = self.queryButton.toPlainText()
@@ -285,24 +306,33 @@ class Ui_MainWindow(object):
     def showPlots(self):
         plotBalanceAndCosts(self.viewDataFrame,DATE_COL,AMNT_COL,BAL_COL)
 
-    def loadSummary(self):
+    def loadSummary(self, loadDeposit = False):
         if self.viewDataFrame is None:
             return
         if self.viewDataFrame[AMNT_COL].count() == 0:
             return
         summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
-
-        summaryText = "total cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].sum()) + "\n"
+        summaryText = " ----- Costs ----\n" 
+        summaryText += "total cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].sum()) + "\n"
         summaryText += "average cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].mean()) + "\n"
         summaryText += "median cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].median()) + "\n"
         summaryText += "number of cost: " + str(summaryDF[AMNT_COL].count()) +"\n"
         summaryText += "highest cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].min()) + "\n"
         summaryText += "minimum cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].max()) + "\n"
 
+        # deposits
+        if loadDeposit:
+            summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
+            summaryText += "\n ----- Deposits ----\n" 
+            summaryText += "total deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].sum()) + "\n"
+            summaryText += "average deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].mean()) + "\n"
+            summaryText += "median deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].median()) + "\n"
+            summaryText += "number of deposits: " + str(summaryDF[AMNT_COL].count()) +"\n"
+            summaryText += "highest deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].max()) + "\n"
+            summaryText += "minimum deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].min()) + "\n"
+
+
         self.summaryText.setText(summaryText)
-
-
-
 
 
 if __name__ == "__main__":

@@ -17,7 +17,9 @@ from uiUtilities.pandasModel import PandasModel
 from analasisAPI.queries import queryBankDataFrame
 from analasisAPI.plotUtilities import plotBalanceAndCosts
 
-
+def npNum2Str(number):
+    import numpy as np
+    return str( np.round(number,decimals = 2) ) 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -171,8 +173,8 @@ class Ui_MainWindow(object):
         self.isFilterRange.stateChanged.connect(lambda: self.toggleAmount())
 
         # file loader
-        self.dataFrame = []
-        self.viewDataFrame = []
+        self.dataFrame = None
+        self.viewDataFrame = None
         self.actionLoad.triggered.connect(lambda: self.loadFile())
 
         # apply button
@@ -202,7 +204,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "Query Bank Statement"))
-        self.label_7.setText(_translate("MainWindow", " Query:"))
+        self.label_7.setText(_translate("MainWindow", " Query (regex):"))
         self.isFilterByDate.setText(_translate("MainWindow", "Filter By Date"))
         self.label_2.setText(_translate("MainWindow", " Start Date"))
         self.label_3.setText(_translate("MainWindow", " End Date"))
@@ -222,9 +224,15 @@ class Ui_MainWindow(object):
             Loads the viewDataFrame onto the table, the viewDataFrame must be processed before this function
             is called.
         '''
+        if self.viewDataFrame is None:
+            return
         model = PandasModel(self.viewDataFrame)
         self.tableView.setModel(model)
         self.tableView.setSortingEnabled(True)
+
+        # -- sizing --
+        self.tableView.setColumnWidth(1, 100)
+        self.tableView.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         return 0.0
     
     def loadFile(self):
@@ -234,7 +242,7 @@ class Ui_MainWindow(object):
                         None,
                         "QFileDialog.getOpenFileName()",
                         "",
-                        "All Files (*);;CSV Files (*.csv);;Text Files (*.txt)",
+                        "CSV Files (*.csv);;Text Files (*.txt);;All Files (*)",
                         options=options)
         if fileName:
             try:
@@ -249,6 +257,7 @@ class Ui_MainWindow(object):
                 msgBox.show()
 
             self.loadTable()
+            self.loadSummary(loadDeposit=True)
 
     def applyQuery(self):
         queryValue = self.queryButton.toPlainText()
@@ -271,9 +280,38 @@ class Ui_MainWindow(object):
         else:
             self.viewDataFrame = self.dataFrame
         self.loadTable()
+        self.loadSummary()
 
     def showPlots(self):
         plotBalanceAndCosts(self.viewDataFrame,DATE_COL,AMNT_COL,BAL_COL)
+
+    def loadSummary(self, loadDeposit = False):
+        if self.viewDataFrame is None:
+            return
+        if self.viewDataFrame[AMNT_COL].count() == 0:
+            return
+        summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
+        summaryText = " ----- Costs ----\n" 
+        summaryText += "total cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].sum()) + "\n"
+        summaryText += "average cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].mean()) + "\n"
+        summaryText += "median cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].median()) + "\n"
+        summaryText += "number of cost: " + str(summaryDF[AMNT_COL].count()) +"\n"
+        summaryText += "highest cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].min()) + "\n"
+        summaryText += "minimum cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].max()) + "\n"
+
+        # deposits
+        if loadDeposit:
+            summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
+            summaryText += "\n ----- Deposits ----\n" 
+            summaryText += "total deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].sum()) + "\n"
+            summaryText += "average deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].mean()) + "\n"
+            summaryText += "median deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].median()) + "\n"
+            summaryText += "number of deposits: " + str(summaryDF[AMNT_COL].count()) +"\n"
+            summaryText += "highest deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].max()) + "\n"
+            summaryText += "minimum deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].min()) + "\n"
+
+
+        self.summaryText.setText(summaryText)
 
 
 
