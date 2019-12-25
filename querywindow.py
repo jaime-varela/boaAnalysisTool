@@ -17,6 +17,7 @@ from uiUtilities.pandasModel import PandasModel
 from analasisAPI.queries import queryBankDataFrame
 from analasisAPI.plotUtilities import plotBalanceAndCosts
 from enum import Enum
+from analasisAPI.plotUtilities import plotDataFrameTimeSeriesCol
 
 def npNum2Str(number):
     import numpy as np
@@ -228,6 +229,9 @@ class Ui_MainWindow(object):
         # all
         self.actionall.triggered.connect(lambda: self.loadAll())
 
+        # deposit plot
+        self.actiondeposit_plot.triggered.connect(lambda: self.depositPlot())
+
     def toggleDate(self):
         if self.isFilterByDate.isChecked():
             self.startDate.setReadOnly(False)
@@ -290,7 +294,7 @@ class Ui_MainWindow(object):
         self.loadSummary()
     
     def loadAll(self):
-        self.tableDisplayMode = tableDisplayMode.DEBITS
+        self.tableDisplayMode = tableDisplayMode.ALL
         self.viewDataFrame =  self.dataFrame
         self.loadTable()
         self.loadSummary(loadDeposit=True)
@@ -341,20 +345,37 @@ class Ui_MainWindow(object):
         queryValue = self.queryButton.toPlainText()
         lowDate = self.startDate.date().toPyDate()
         highDate = self.endDate.date().toPyDate()
-        lowAmnt = -1.0 * self.highSpinBox.value()
-        highAmnt = -1.0 * self.lowSpinBox.value()
+        lowAmnt = 0.0
+        highAmnt = 0.0
+
+        if self.tableDisplayMode != tableDisplayMode.DEPOSITS:
+            lowAmnt = -1.0 * self.highSpinBox.value()
+            highAmnt = -1.0 * self.lowSpinBox.value()
+        else:
+            lowAmnt = 1.0 * self.lowSpinBox.value()
+            highAmnt = 1.0 * self.highSpinBox.value()
+
+        queryDF = None
+        if self.tableDisplayMode == tableDisplayMode.ALL:
+            queryDF = self.dataFrame
+        elif self.tableDisplayMode == tableDisplayMode.DEPOSITS:
+            queryDF = self.dataFrame[self.dataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
+        else:
+            queryDF = self.dataFrame[self.dataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
+
+
         if self.isFilterByDate.isChecked() and self.isFilterRange.isChecked():
-            self.viewDataFrame = queryBankDataFrame(self.dataFrame, regex = queryValue,
+            self.viewDataFrame = queryBankDataFrame(queryDF, regex = queryValue,
             dateRange=[lowDate,highDate],
             amountRange=[lowAmnt,highAmnt])
         elif self.isFilterByDate.isChecked():
-            self.viewDataFrame = queryBankDataFrame(self.dataFrame, regex = queryValue,
+            self.viewDataFrame = queryBankDataFrame(queryDF, regex = queryValue,
             dateRange=[lowDate,highDate])
         elif self.isFilterRange.isChecked():
-            self.viewDataFrame = queryBankDataFrame(self.dataFrame, regex = queryValue,
+            self.viewDataFrame = queryBankDataFrame(queryDF, regex = queryValue,
             amountRange=[lowAmnt,highAmnt])
         elif queryValue != "":
-            self.viewDataFrame = queryBankDataFrame(self.dataFrame, regex = queryValue)
+            self.viewDataFrame = queryBankDataFrame(queryDF, regex = queryValue)
         else:
             self.viewDataFrame = self.dataFrame
         self.loadTable()
@@ -362,6 +383,10 @@ class Ui_MainWindow(object):
 
     def showPlots(self):
         plotBalanceAndCosts(self.viewDataFrame,DATE_COL,AMNT_COL,BAL_COL)
+
+    def depositPlot(self):
+        depositPlotDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
+        plotDataFrameTimeSeriesCol(depositPlotDF, DATE_COL, AMNT_COL, timesMinusOne = False)
 
     def loadSummary(self, loadDeposit = False):
         if self.viewDataFrame is None:
@@ -394,7 +419,20 @@ class Ui_MainWindow(object):
         self.summaryText.setText(summaryText)
 
     def exportFile(self):
-        return
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(None,"QFileDialog.getSaveFileName()","","CSV files (*.csv)", options=options)
+        if fileName:
+            try:
+                self.viewDataFrame.to_csv(fileName)
+            except:
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText("File type not supported.")
+                msgBox.setWindowTitle("Invalid File")
+                msgBox.show()
+
+            
 
 
 
