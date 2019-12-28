@@ -7,6 +7,8 @@ from analasisAPI.plotUtilities import plotDataFrameTimeSeriesCol
 import datetime
 
 
+from analasisAPI.fileLoader import combineBOAfiles
+
 # This should be the path to the file of your untouched BOA statement
 #filepath = "/home/jaimevrl/Documents/Finance/stmt.csv"
 filepath = "sample.csv"
@@ -34,6 +36,11 @@ range2filter = filterDataFrameByAmount(range1filter,[-100.0,True])
 
 queryCost = queryBankDataFrame(range2filter, "micro",dateRange=[datetime.datetime(2019,9,10),datetime.datetime(2019,12,10)])
 
-print(queryCost)
-print(range2filter.to_string())
-plotDataFrameTimeSeriesCol(range2filter,'Date','Amount')
+# print(queryCost)
+# print(range2filter.to_string())
+# plotDataFrameTimeSeriesCol(range2filter,'Date','Amount')
+file1 = "/home/jaimevrl/Documents/Finance/stmt.csv"
+file2 = "/home/jaimevrl/Documents/Finance/stmt2.csv"
+outFile = "/home/jaimevrl/Documents/Finance/outTest.csv"
+
+combineBOAfiles(file1,file2,outFile)

@@ -19,10 +19,7 @@ from analasisAPI.plotUtilities import plotBalanceAndCosts
 from enum import Enum
 from analasisAPI.plotUtilities import plotDataFrameTimeSeriesCol
 
-def npNum2Str(number):
-    import numpy as np
-    return str( np.round(number,decimals = 2) ) 
-
+from analasisAPI.fileLoader import npNum2Str
 
 class tableDisplayMode(Enum):
     ALL = 1
