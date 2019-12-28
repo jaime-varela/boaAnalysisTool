@@ -12,3 +12,11 @@ The program examines the description fields and groups the expenses according to
 
 See the following for a basic examination:
 https://ourcodingclub.github.io/2019/01/07/pandas-time-series.html#periodicity
+
+
+# Libraries in use
+
+1.) pandas
+2.) time series analysis (https://www.statsmodels.org/stable/tsa.html)
+3.) numpy
+4.) scipy
