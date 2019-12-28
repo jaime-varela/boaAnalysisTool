@@ -12,6 +12,11 @@ BAL_COL = 'Running Bal.'
 
 SUMMARY_CONST = 'Summary Amt.'
 
+
+def stripCommas(inputStr):
+    return inputStr.replace(",","")
+
+
 # the current BOA file has six useless rows so we do not read those
 # TODO: make this more robust for different bank formats
 def LoadFile(filePath):
@@ -23,10 +28,10 @@ def LoadFile(filePath):
     '''
     dtypes = {'A':'str','B':'str','C':'float','D':'float'}
     parse_dates = [0]
-    return pd.read_csv(filePath,skiprows=[0,1,2,3,4,5,7],dtype=dtypes,parse_dates=parse_dates)
+    dataFrame = pd.read_csv(filePath,skiprows=[0,1,2,3,4,5,7],dtype=dtypes,parse_dates=parse_dates)
+    dataFrame[DESC_COL] = dataFrame[DESC_COL].apply(lambda x: stripCommas(x))
+    return dataFrame
 
-def stripCommas(inputStr):
-    return inputStr.replace(",","")
 
 
 def combineBOAfiles(file1,file2,outFile):
@@ -56,5 +61,5 @@ def combineBOAfiles(file1,file2,outFile):
     for index, row in unionDataFrame.iterrows():
         rowString = str(row[DATE_COL]) + "," + stripCommas(row[DESC_COL]) + "," + npNum2Str(row[AMNT_COL])+ "," + npNum2Str(row[BAL_COL]) +"\n"
         File_object.write(rowString)
-    # TODO figure out the comma issue
+
     File_object.close()
