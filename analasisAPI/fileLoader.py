@@ -56,5 +56,5 @@ def combineBOAfiles(file1,file2,outFile):
     for index, row in unionDataFrame.iterrows():
         rowString = str(row[DATE_COL]) + "," + stripCommas(row[DESC_COL]) + "," + npNum2Str(row[AMNT_COL])+ "," + npNum2Str(row[BAL_COL]) +"\n"
         File_object.write(rowString)
-
+    # TODO figure out the comma issue
     File_object.close()
