@@ -11,7 +11,6 @@ from enum import Enum
 class textProcessing(Enum):
     NumericRemoval = 1
     NonAlphabetCharRemoval = 2
-    NumericAndNonAlphabetCharRemoval = 3
 
 class groupingAlgorithm(Enum):
     FirstNdigits = 1
@@ -20,6 +19,23 @@ class groupingAlgorithm(Enum):
     NumericRemovalStringSimilarity = 4
     FirstNLastMdigits = 5
 
+def removeNumerics(dataFrame, ColumnName):
+    #TODO
+    return
+
+def removeNonAlpha(dataFrame, ColumnName):
+    #TODO
+    return
+
+
+def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
+    # using if else because python doesn't have enums
+    if textProcessEnum == textProcessEnum.NumericRemoval:
+        return removeNumerics(dataFrame, ColumnName)
+    elif textProcessEnum == textProcessEnum.NonAlphabetCharRemoval:
+        return removeNonAlpha(dataFrame, ColumnName)
+    else:
+        return dataFrame
 
 # Rough algorithm sketch
 # 1.) process each description element with a text processing algorithm
