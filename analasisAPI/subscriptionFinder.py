@@ -18,6 +18,7 @@ class groupingAlgorithm(Enum):
     LastNdigits = 2
     StringSimilarity = 3
     NumericRemovalStringSimilarity = 4
+    FirstNLastMdigits = 5
 
 
 # Rough algorithm sketch
