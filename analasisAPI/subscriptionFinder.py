@@ -11,6 +11,7 @@ from enum import Enum
 class textProcessing(Enum):
     NumericRemoval = 1
     NonAlphabetCharRemoval = 2
+    NonAlphaNumericCharRemoval = 3
 
 class groupingAlgorithm(Enum):
     FirstNdigits = 1
@@ -27,6 +28,9 @@ def removeNonAlpha(dataFrame, ColumnName):
     #TODO
     return
 
+def removeNonAlphaNumeric(dataFrame, ColumnName):
+    #TODO
+    return
 
 def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
     # using if else because python doesn't have enums
@@ -34,6 +38,8 @@ def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
         return removeNumerics(dataFrame, ColumnName)
     elif textProcessEnum == textProcessEnum.NonAlphabetCharRemoval:
         return removeNonAlpha(dataFrame, ColumnName)
+    elif textProcessEnum == textProcessEnum.NonAlphabetCharRemoval:
+        return removeNonAlphaNumeric(dataFrame, ColumnName)
     else:
         return dataFrame
 
@@ -46,6 +52,17 @@ def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
 #
 # The display data frame consists of the following columns [Representative Description, Avg. Cost, Schedule (Daily,weekly, or monthly), Occurence (days of week, day of week, or day of month)]
 # bi-monthly might be tricky and so is non-approximate schedules.
+
+
+
+# Binning algorithm:
+
+# Potentially a divide and conquer with union-sets might be used.  
+# However the merger seems to be equivalent to the base problem and I'm having difficulty figuring out the best solution
+
+
+
+
 
 def stringGroups():
     return 0.0
