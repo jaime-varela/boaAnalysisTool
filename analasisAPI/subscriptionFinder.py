@@ -20,17 +20,24 @@ class groupingAlgorithm(Enum):
     NumericRemovalStringSimilarity = 4
     FirstNLastMdigits = 5
 
-def removeNumerics(dataFrame, ColumnName):
-    #TODO
-    return
+
+
+import string
+
+def removeNumerics(dataFrame, ColumnName):    
+    newDF = dataFrame
+    newDF[ColumnName] = newDF[ColumnName].apply(lambda x: x.join(i for i in x if not i.isdigit()))
+    return newDF
 
 def removeNonAlpha(dataFrame, ColumnName):
-    #TODO
-    return
+    newDF = dataFrame
+    newDF[ColumnName] = newDF[ColumnName].apply(lambda x: x.join(ch for ch in x if ch.isalpha()) )
+    return newDF
 
 def removeNonAlphaNumeric(dataFrame, ColumnName):
-    #TODO
-    return
+    newDF = dataFrame
+    newDF[ColumnName] = newDF[ColumnName].apply(lambda x: x.join(ch for ch in x if ch.isalnum()) )
+    return newDF
 
 def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
     # using if else because python doesn't have enums
@@ -57,10 +64,14 @@ def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
 
 # Binning algorithm:
 
-# Potentially a divide and conquer with union-sets might be used.  
-# However the merger seems to be equivalent to the base problem and I'm having difficulty figuring out the best solution
+# will have to use an O(N^2) algorithm and measure it for long term viability.
+# The O(N^2) algorithm should be find withing the low thousands but will inevitably fail for
+# the millions of entries.  Depending on how long it takes for bank entries to grow
+# this may not be a problem
 
-
+# It is likely that case by case versions of each binning scenario will
+# have lower complexity algorithms.  Any binning where an ordering relation 
+# is preserved can be easily solved.  The string similarity algorithm might be the trickiest.
 
 
 
