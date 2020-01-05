@@ -17,8 +17,7 @@ class groupingAlgorithm(Enum):
     FirstNdigits = 1
     LastNdigits = 2
     StringSimilarity = 3
-    NumericRemovalStringSimilarity = 4
-    FirstNLastMdigits = 5
+    FirstNandLastMdigits = 4
 
 
 
@@ -61,6 +60,24 @@ def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
 # bi-monthly might be tricky and so is non-approximate schedules.
 
 
+# binning predicates
+def NcharMatch(str1, str2, searchIndexStart = 0, nChars = 6):
+    #TODO: assert check on params
+    compareStr1 = str1[searchIndexStart:searchIndexStart + nChars - 1]
+    compareStr2 = str2[searchIndexStart:searchIndexStart + nChars - 1]
+    return compareStr1.lower() == compareStr2.lower()
+
+def reverseNcharMatch(str1,str2, reverseIndexStart = 0, nChars = 6):
+    #TODO: assert check on params
+    startIndex1 = len(str1) - (reverseIndexStart + nChars)
+    startIndex2 = len(str2) - (reverseIndexStart + nChars)
+    endIndex1 = startIndex1 + nChars
+    endIndex2 = startIndex2 + nChars
+    compareStr1 = str1[startIndex1:endIndex1]
+    compareStr2 = str2[startIndex2:endIndex2]
+    return compareStr1.lower() == compareStr2.lower()
+
+
 
 # Binning algorithm:
 
@@ -73,10 +90,32 @@ def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
 # have lower complexity algorithms.  Any binning where an ordering relation 
 # is preserved can be easily solved.  The string similarity algorithm might be the trickiest.
 
+def binStringObjectsByPredicate(stringArray, predicate):
+    '''
+        Very dumb O(N^2) algorithm which returns an array of arrays of elements such that each sub array
+        has all elements with true predicates.
+    '''    
+    retVal = []
+    counter = 0
+    predicateValueFound = False
+    for strval in stringArray:
+        if counter == 0:
+            retVal.append([strval])
+        predicateValueFound = False
+        for trialStr in retVal:
+            if predicateValueFound:
+                break
+            if predicate(strval,trialStr[0]):
+                trialStr.append(strval)
+                predicateValueFound = True
+        if not predicateValueFound and counter != 0:
+            retVal.append([strval])
+
+    return retVal
 
 
-def stringGroups():
-    return 0.0
+
+
 
 
 # returns a numeric value between zero and one if a signal has a period
