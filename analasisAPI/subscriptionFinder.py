@@ -77,6 +77,12 @@ def reverseNcharMatch(str1,str2, reverseIndexStart = 0, nChars = 6):
     compareStr2 = str2[startIndex2:endIndex2]
     return compareStr1.lower() == compareStr2.lower()
 
+import Levenshtein
+
+def stringSimilarity(str1,str2 , threshold = 0.85):
+    len1 = len(str1)
+    len2 = len(str2)
+    return (Levenshtein.distance(str1,str2) / max(len1,len2)) > 0.85
 
 
 # Binning algorithm:
@@ -101,6 +107,7 @@ def binStringObjectsByPredicate(stringArray, predicate):
     for strval in stringArray:
         if counter == 0:
             retVal.append([strval])
+            counter += 1
         predicateValueFound = False
         for trialStr in retVal:
             if predicateValueFound:
@@ -110,6 +117,7 @@ def binStringObjectsByPredicate(stringArray, predicate):
                 predicateValueFound = True
         if not predicateValueFound and counter != 0:
             retVal.append([strval])
+            counter += 1
 
     return retVal
 
