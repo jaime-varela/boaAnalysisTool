@@ -40,7 +40,40 @@ queryCost = queryBankDataFrame(range2filter, "micro",dateRange=[datetime.datetim
 # print(range2filter.to_string())
 # plotDataFrameTimeSeriesCol(range2filter,'Date','Amount')
 file1 = "/home/jaimevrl/Documents/Finance/stmt.csv"
-file2 = "/home/jaimevrl/Documents/Finance/stmt2.csv"
-outFile = "/home/jaimevrl/Documents/Finance/outTest.csv"
+# file2 = "/home/jaimevrl/Documents/Finance/stmt2.csv"
+# outFile = "/home/jaimevrl/Documents/Finance/outTest.csv"
 
-combineBOAfiles(file1,file2,outFile)
+# combineBOAfiles(file1,file2,outFile)
+
+dataFrame = LoadFile(file1)
+
+
+from analasisAPI.subscriptionFinder import removeNumerics
+from analasisAPI.subscriptionFinder import removeNonAlpha, removeNonAlphaNumeric
+from analasisAPI.fileLoader import DESC_COL
+
+
+# filteredDF = removeNonAlphaNumeric(dataFrame,DESC_COL)
+# print(filteredDF)
+
+# strval = "asdf23221sdaf"
+
+# def trialVal(strv):
+#     return ''.join(i for i in strv if not i.isdigit())
+
+# newval = trialVal(strval)
+# print(newval)
+
+charVal = 4
+str1 = "aaabbb"
+str2 = "acabbb"
+from analasisAPI.subscriptionFinder import NcharMatch, reverseNcharMatch, stringSimilarity
+predVal = NcharMatch(str1,str2,nChars = charVal)
+# print(predVal)
+revpredval = reverseNcharMatch(str1,str2,nChars=charVal)
+# print(revpredval)
+
+
+print(stringSimilarity(str1,str2))
+import Levenshtein
+

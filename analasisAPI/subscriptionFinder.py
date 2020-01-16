@@ -25,17 +25,17 @@ import string
 
 def removeNumerics(dataFrame, ColumnName):    
     newDF = dataFrame
-    newDF[ColumnName] = newDF[ColumnName].apply(lambda x: x.join(i for i in x if not i.isdigit()))
+    newDF[ColumnName] = newDF[ColumnName].apply(lambda x: ''.join(i for i in x if not i.isdigit()))
     return newDF
 
 def removeNonAlpha(dataFrame, ColumnName):
     newDF = dataFrame
-    newDF[ColumnName] = newDF[ColumnName].apply(lambda x: x.join(ch for ch in x if ch.isalpha()) )
+    newDF[ColumnName] = newDF[ColumnName].apply(lambda x: ''.join(ch for ch in x if ch.isalpha()) )
     return newDF
 
 def removeNonAlphaNumeric(dataFrame, ColumnName):
     newDF = dataFrame
-    newDF[ColumnName] = newDF[ColumnName].apply(lambda x: x.join(ch for ch in x if ch.isalnum()) )
+    newDF[ColumnName] = newDF[ColumnName].apply(lambda x: ''.join(ch for ch in x if ch.isalnum()) )
     return newDF
 
 def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
@@ -63,8 +63,8 @@ def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
 # binning predicates
 def NcharMatch(str1, str2, searchIndexStart = 0, nChars = 6):
     #TODO: assert check on params
-    compareStr1 = str1[searchIndexStart:searchIndexStart + nChars - 1]
-    compareStr2 = str2[searchIndexStart:searchIndexStart + nChars - 1]
+    compareStr1 = str1[searchIndexStart:searchIndexStart + nChars]
+    compareStr2 = str2[searchIndexStart:searchIndexStart + nChars]
     return compareStr1.lower() == compareStr2.lower()
 
 def reverseNcharMatch(str1,str2, reverseIndexStart = 0, nChars = 6):
@@ -79,10 +79,11 @@ def reverseNcharMatch(str1,str2, reverseIndexStart = 0, nChars = 6):
 
 import Levenshtein
 
-def stringSimilarity(str1,str2 , threshold = 0.85):
+def stringSimilarity(str1,str2 , threshold = 0.80):
     len1 = len(str1)
     len2 = len(str2)
-    return (Levenshtein.distance(str1,str2) / max(len1,len2)) > 0.85
+    distMeasure = (1-(Levenshtein.distance(str1,str2) / max(len1,len2)) )
+    return distMeasure > threshold
 
 
 # Binning algorithm:
