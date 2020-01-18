@@ -105,24 +105,26 @@ def binStringObjectsByPredicate(stringArray, predicate):
         Such that predicate(strij,strik) = True and predicate(strij,lm) = False for i != l.  
         The index for each pair in an array corresponds to the strings index in the original array.
     '''    
-    #FIXME: add the indexes or just return indices
+
     retVal = []
     counter = 0
     predicateValueFound = False
     for strval in stringArray:
         if counter == 0:
-            retVal.append([strval])
+            retVal.append([(strval,counter)])
             counter += 1
         predicateValueFound = False
-        for trialStr in retVal:
+        for trialStrArray in retVal:
+            representativeString = trialStrArray[0][0]
             if predicateValueFound:
                 break
-            if predicate(strval,trialStr[0]):
-                trialStr.append(strval)
+            if predicate(strval,representativeString):
+                trialStrArray.append((strval,counter))
                 predicateValueFound = True
         if not predicateValueFound and counter != 0:
-            retVal.append([strval])
-            counter += 1
+            retVal.append([(strval,counter)])
+        
+        counter += 1
 
     return retVal
 
@@ -134,6 +136,36 @@ def averageDFTimeDifference(groupedDF, timeColName):
     return newDF.mean()
 
 from .fileLoader import DATE_COL
+
+
+def isDFdailySchedule(groupedDF,timeColName):
+    # TODO: daily schedule predicate
+    timeDiff = averageDFTimeDifference(groupedDF, DATE_COL)
+    oneday = 24 * 60 * 60
+    fivedays = 5*oneday
+    if timeDiff.seconds > fivedays:
+        return False
+
+    return True
+
+def isDFMonthlySchedule(groupedDF,timeColName):
+    # TODO: monthy schedule predicate
+    timeDiff = averageDFTimeDifference(groupedDF, DATE_COL)
+    oneday = 24 * 60 * 60
+    month = 30*oneday
+    fudgeFactor = 1.2
+    if timeDiff.seconds > fudgeFactor * month:
+        return False
+    return True
+
+def isDFweeklySchedule(groupedDF,timeColName):
+    # TODO: monthy schedule predicate
+    timeDiff = averageDFTimeDifference(groupedDF, DATE_COL)
+    oneday = 24 * 60 * 60
+    sevendays = 7*oneday
+    if timeDiff.seconds > sevendays:
+        return False
+    return True
 
 def dailyDFSchedule(groupedDF,timeColName):
     # TODO: daily scheduler
@@ -151,18 +183,12 @@ def monthlyDFSchedule(groupedDF,timeColName):
 def dataFrameSchedule(groupedDF, fourierThreshold):
     # TODO: implement the schedule return
     # get the average of difference in time of the data frame
-    timeDiff = averageDFTimeDifference(groupedDF, DATE_COL)
-    isDaily = False
-    isWeekly = False
-    isMonthly = False
-    # if time less than 5 days:
-    #     isDaily = isDFdailySchedule(groupedDF, DATE_COL)
+    isDaily = isDFdailySchedule(groupedDF, DATE_COL)
     
-    # if not isDaily and (time < 1 month):
-    #     isWeekly = isDFweeklySchedule(groupedDF,DATE_COL)
+    isWeekly = isDFweeklySchedule(groupedDF,DATE_COL)
 
-    # if not isWeekly and not isDaily:
-    #     isMonthly = isDFMonthlySchedule(groupedDF,DATE_COL)
+    isMonthly = isDFMonthlySchedule(groupedDF,DATE_COL)
+
     if isDaily:
         return dailyDFSchedule(groupedDF,DATE_COL)
     elif isWeekly:
