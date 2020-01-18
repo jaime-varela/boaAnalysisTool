@@ -82,7 +82,7 @@ import Levenshtein
 def stringSimilarity(str1,str2 , threshold = 0.80):
     len1 = len(str1)
     len2 = len(str2)
-    distMeasure = (1-(Levenshtein.distance(str1,str2) / max(len1,len2)) )
+    distMeasure = abs(1-(Levenshtein.distance(str1,str2) / max(len1,len2)) )
     return distMeasure > threshold
 
 
@@ -96,12 +96,16 @@ def stringSimilarity(str1,str2 , threshold = 0.80):
 # It is likely that case by case versions of each binning scenario will
 # have lower complexity algorithms.  Any binning where an ordering relation 
 # is preserved can be easily solved.  The string similarity algorithm might be the trickiest.
-
 def binStringObjectsByPredicate(stringArray, predicate):
     '''
-        Very dumb O(N^2) algorithm which returns an array of arrays of elements such that each sub array
-        has all elements with true predicates.
+        Very dumb O(N^2) algorithm which returns an array of arrays of the form:
+        
+        [[{str11,ind11},...],[{str21,ind21},...]].
+
+        Such that predicate(strij,strik) = True and predicate(strij,lm) = False for i != l.  
+        The index for each pair in an array corresponds to the strings index in the original array.
     '''    
+    #FIXME: add the indexes
     retVal = []
     counter = 0
     predicateValueFound = False
@@ -124,23 +128,50 @@ def binStringObjectsByPredicate(stringArray, predicate):
 
 
 
+def averageDFTimeDifference(groupedDF, DATE_COL):
+    #TODO: return average time difference in column
+    return 1.0
 
+from fileLoader import DATE_COL
 
+def dailyDFSchedule(groupedDF,DATE_COL):
+    # TODO:
+    return {}
+
+def weeklyDFSchedule(groupedDF,DATE_COL):
+    # TODO:
+    return {}
+
+def monthlyDFSchedule(groupedDF,DATE_COL):
+    # TODO:
+    return {}
 
 # returns a numeric value between zero and one if a signal has a period
 def dataFrameSchedule(groupedDF, fourierThreshold):
+    # TODO:
+    # get the average of difference in time of the data frame
+    timeDiff = averageDFTimeDifference(groupedDF, DATE_COL)
+    isDaily = False
+    isWeekly = False
+    isMonthly = False
+    # if time less than 5 days:
+    #     isDaily = isDFdailySchedule(groupedDF, DATE_COL)
+    
+    # if not isDaily and (time < 1 month):
+    #     isWeekly = isDFweeklySchedule(groupedDF,DATE_COL)
 
-    # Method 1 Auto correleation
+    # if not isWeekly and not isDaily:
+    #     isMonthly = isDFMonthlySchedule(groupedDF,DATE_COL)
+    if isDaily:
+        return dailyDFSchedule(groupedDF,DATE_COL)
+    elif isWeekly:
+        return weeklyDFSchedule(groupedDF,DATE_COL)
+    elif isMonthly:
+        return monthlyDFSchedule(groupedDF,DATE_COL)
+    else:
+        return {}
 
-    # Method 2 fourier transform analysis of some sort
-
-    # TODO: find some average numerical measure and use an empirical threshold
-    return 0.0
-
-
-# returns the periods of the signal based on threshold conditions
-def getPeriods(groupedDF, params):
-
-    # FFT analysis and maybe autocorrelation
-    return [0.0]
-
+# combine all functions to get schedules
+def getSchedules(dataFrame):
+    # TODO: do it
+    return {}
