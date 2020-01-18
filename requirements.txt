@@ -1,0 +1,15 @@
+cycler==0.10.0
+kiwisolver==1.1.0
+matplotlib==3.1.2
+numpy==1.18.1
+pandas==0.25.3
+pkg-resources==0.0.0
+pyparsing==2.4.6
+python-dateutil==2.8.1
+python-Levenshtein==0.12.0
+pytz==2019.3
+ruamel.yaml==0.16.5
+ruamel.yaml.clib==0.2.0
+six==1.14.0
+vext==0.7.3
+vext.pyqt5==0.7.0

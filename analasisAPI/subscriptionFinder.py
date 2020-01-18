@@ -105,7 +105,7 @@ def binStringObjectsByPredicate(stringArray, predicate):
         Such that predicate(strij,strik) = True and predicate(strij,lm) = False for i != l.  
         The index for each pair in an array corresponds to the strings index in the original array.
     '''    
-    #FIXME: add the indexes
+    #FIXME: add the indexes or just return indices
     retVal = []
     counter = 0
     predicateValueFound = False
@@ -128,27 +128,28 @@ def binStringObjectsByPredicate(stringArray, predicate):
 
 
 
-def averageDFTimeDifference(groupedDF, DATE_COL):
-    #TODO: return average time difference in column
-    return 1.0
+def averageDFTimeDifference(groupedDF, timeColName):
+    newDF = groupedDF.sort_values(timeColName, ascending=True)
+    newDF = newDF[timeColName].diff()
+    return newDF.mean()
 
-from fileLoader import DATE_COL
+from .fileLoader import DATE_COL
 
-def dailyDFSchedule(groupedDF,DATE_COL):
-    # TODO:
+def dailyDFSchedule(groupedDF,timeColName):
+    # TODO: daily scheduler
     return {}
 
-def weeklyDFSchedule(groupedDF,DATE_COL):
-    # TODO:
+def weeklyDFSchedule(groupedDF,timeColName):
+    # TODO: weekly scheduler
     return {}
 
-def monthlyDFSchedule(groupedDF,DATE_COL):
-    # TODO:
+def monthlyDFSchedule(groupedDF,timeColName):
+    # TODO: monthly scheduler
     return {}
 
 # returns a numeric value between zero and one if a signal has a period
 def dataFrameSchedule(groupedDF, fourierThreshold):
-    # TODO:
+    # TODO: implement the schedule return
     # get the average of difference in time of the data frame
     timeDiff = averageDFTimeDifference(groupedDF, DATE_COL)
     isDaily = False
@@ -173,5 +174,5 @@ def dataFrameSchedule(groupedDF, fourierThreshold):
 
 # combine all functions to get schedules
 def getSchedules(dataFrame):
-    # TODO: do it
+    # TODO: put everything together
     return {}
