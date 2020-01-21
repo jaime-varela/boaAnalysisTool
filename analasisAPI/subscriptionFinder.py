@@ -102,7 +102,7 @@ def binStringObjectsByPredicate(stringArray, predicate):
         
         [[{str11,ind11},...],[{str21,ind21},...]].
 
-        Such that predicate(strij,strik) = True and predicate(strij,lm) = False for i != l.  
+        Such that predicate(strij,strik) = True and predicate(strij,strlm) = False for i != l.  
         The index for each pair in an array corresponds to the strings index in the original array.
     '''    
 
@@ -140,7 +140,7 @@ from .fileLoader import DATE_COL
 
 def isDFdailySchedule(groupedDF,timeColName):
     # TODO: daily schedule predicate
-    timeDiff = averageDFTimeDifference(groupedDF, DATE_COL)
+    timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
     fivedays = 5*oneday
     if timeDiff.seconds > fivedays:
@@ -150,7 +150,7 @@ def isDFdailySchedule(groupedDF,timeColName):
 
 def isDFMonthlySchedule(groupedDF,timeColName):
     # TODO: monthy schedule predicate
-    timeDiff = averageDFTimeDifference(groupedDF, DATE_COL)
+    timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
     month = 30*oneday
     fudgeFactor = 1.2
@@ -160,11 +160,14 @@ def isDFMonthlySchedule(groupedDF,timeColName):
 
 def isDFweeklySchedule(groupedDF,timeColName):
     # TODO: monthy schedule predicate
-    timeDiff = averageDFTimeDifference(groupedDF, DATE_COL)
+    timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
     sevendays = 7*oneday
-    if timeDiff.seconds > sevendays:
+    fudgeFactor = 1.1
+    if timeDiff.seconds > fudgeFactor *sevendays:
         return False
+    if timeDiff.seconds < sevendays / fudgeFactor:
+        return False    
     return True
 
 def dailyDFSchedule(groupedDF,timeColName):
