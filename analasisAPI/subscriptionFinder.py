@@ -148,27 +148,30 @@ def isDFdailySchedule(groupedDF,timeColName):
 
     return True
 
-def isDFMonthlySchedule(groupedDF,timeColName):
-    # TODO: monthy schedule predicate
-    timeDiff = averageDFTimeDifference(groupedDF, timeColName)
-    oneday = 24 * 60 * 60
-    month = 30*oneday
-    fudgeFactor = 1.2
-    if timeDiff.seconds > fudgeFactor * month:
-        return False
-    return True
 
 def isDFweeklySchedule(groupedDF,timeColName):
-    # TODO: monthy schedule predicate
     timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
     sevendays = 7*oneday
     fudgeFactor = 1.1
     if timeDiff.seconds > fudgeFactor *sevendays:
         return False
-    if timeDiff.seconds < sevendays / fudgeFactor:
+    if isDFdailySchedule(groupedDF,timeColName):
         return False    
     return True
+
+
+def isDFMonthlySchedule(groupedDF,timeColName):
+    timeDiff = averageDFTimeDifference(groupedDF, timeColName)
+    oneday = 24 * 60 * 60
+    month = 30*oneday
+    fudgeFactor = 1.2
+    if timeDiff.seconds > fudgeFactor * month:
+        return False
+    if isDFdailySchedule(groupedDF,timeColName) or isDFweeklySchedule(groupedDF,timeColName):
+        return False
+    return True
+
 
 def dailyDFSchedule(groupedDF,timeColName):
     # TODO: daily scheduler
