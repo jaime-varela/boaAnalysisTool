@@ -139,7 +139,6 @@ from .fileLoader import DATE_COL
 
 
 def isDFdailySchedule(groupedDF,timeColName):
-    # TODO: daily schedule predicate
     timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
     fivedays = 5*oneday
@@ -174,17 +173,26 @@ def isDFMonthlySchedule(groupedDF,timeColName):
 
 
 def dailyDFSchedule(groupedDF,timeColName):
-    # TODO: daily scheduler
-    return {}
+    if not isDFdailySchedule(groupedDF,timeColName):
+        return {}
+    daysOfWeek = groupedDF[timeColName].apply(lambda x: x.weekday())
+    daysOfWeek = daysOfWeek.unique()
+    return daysOfWeek
 
 def weeklyDFSchedule(groupedDF,timeColName):
-    # TODO: weekly scheduler
-    return {}
+    if not isDFweeklySchedule(groupedDF,timeColName):
+        return {}
+    dayOfWeek = groupedDF[timeColName].apply(lambda x: x.weekday())
+    return dayOfWeek.mode()
 
 def monthlyDFSchedule(groupedDF,timeColName):
-    # TODO: monthly scheduler
-    return {}
+    if not isDFMonthlySchedule(groupedDF,timeColName):
+        return {}
+    dayOfMonth = groupedDF[timeColName].apply(lambda x: x.day())
+    return dayOfMonth.mode()
 
+
+#TODO: create an enum for schedule types and return an enum schedule pair 
 # returns a numeric value between zero and one if a signal has a period
 def dataFrameSchedule(groupedDF, fourierThreshold):
     # TODO: implement the schedule return
