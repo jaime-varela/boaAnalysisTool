@@ -10,6 +10,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
+# custom imports
+from uiUtilities.pandasModel import PandasModel
+from uiUtilities.dropdownData import stringToEnumGrouping,stringToEnumTextProcess
+from uiUtilities.dropdownData import dayOfWeekToName, EnumScheduleToString
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -149,6 +154,15 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        self.customizedInit()
+
+    def customizedInit(self):
+        self.algorithmSelection.addItems(stringToEnumGrouping.keys())
+        self.textProcessSelection.addItems(stringToEnumTextProcess.keys())
+        return
+
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
