@@ -1,10 +1,24 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
+from .fileLoader import DATE_COL, DESC_COL
 register_matplotlib_converters()
 
 # it has been decided that using auto-correlation and other tools is not beneficial for schedule finding for this data set type
 # instead a custom condition set will be used
+
+# Rough algorithm sketch
+# 1.) process each description element with a text processing algorithm
+# 2.) put each row of the data frame into a bin corresponding to a predicate condition (look up binning based on binary predicate)
+# 3.) for each bin, determine if the data is scheduled
+# 4.) if a bin is scheduled determine its schedule and place a representative element in the display data frame
+# 5.) if a bin is not scheduled do nothing
+#
+# The display data frame consists of the following columns [Representative Description, Avg. Cost, Schedule (Daily,weekly, or monthly), Occurence (days of week, day of week, or day of month)]
+# bi-monthly might be tricky and so is non-approximate schedules.
+
+
+# ---------------- Enums -----------------------------------------------------------------
 
 from enum import Enum
 
@@ -19,9 +33,16 @@ class groupingAlgorithm(Enum):
     StringSimilarity = 3
     FirstNandLastMdigits = 4
 
+class scheduleTypeEnum(Enum):
+    Daily = 1
+    Weekly = 2
+    Monthly = 3
+    NoSchedule = 4
 
 
 import string
+
+# ----------------------- Text processors --------------------------------------
 
 def removeNumerics(dataFrame, ColumnName):    
     newDF = dataFrame
@@ -49,16 +70,7 @@ def textProcessDF(dataFrame, textProcessEnum, ColumnName, options={}):
     else:
         return dataFrame
 
-# Rough algorithm sketch
-# 1.) process each description element with a text processing algorithm
-# 2.) put each row of the data frame into a bin corresponding to a predicate condition (look up binning based on binary predicate)
-# 3.) for each bin, determine if the data is scheduled
-# 4.) if a bin is scheduled determine its schedule and place a representative element in the display data frame
-# 5.) if a bin is not scheduled do nothing
-#
-# The display data frame consists of the following columns [Representative Description, Avg. Cost, Schedule (Daily,weekly, or monthly), Occurence (days of week, day of week, or day of month)]
-# bi-monthly might be tricky and so is non-approximate schedules.
-
+# --------------------- String binary predicates ------------------------
 
 # binning predicates
 def NcharMatch(str1, str2, searchIndexStart = 0, nChars = 6):
@@ -135,9 +147,11 @@ def averageDFTimeDifference(groupedDF, timeColName):
     newDF = newDF[timeColName].diff()
     return newDF.mean()
 
-from .fileLoader import DATE_COL
 
 
+#----------------------- Schedule Predicates ------------------------------------------------------
+
+# TODO TODO TODO: have a length comparison in predicates.  small arrays can't be analyzed efficiently.
 def isDFdailySchedule(groupedDF,timeColName):
     timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
@@ -171,6 +185,8 @@ def isDFMonthlySchedule(groupedDF,timeColName):
         return False
     return True
 
+#----------------------- Schedulers ------------------------------------------------------
+
 
 def dailyDFSchedule(groupedDF,timeColName):
     if not isDFdailySchedule(groupedDF,timeColName):
@@ -192,10 +208,8 @@ def monthlyDFSchedule(groupedDF,timeColName):
     return dayOfMonth.mode()
 
 
-#TODO: create an enum for schedule types and return an enum schedule pair 
 # returns a numeric value between zero and one if a signal has a period
-def dataFrameSchedule(groupedDF, fourierThreshold):
-    # TODO: implement the schedule return
+def dataFrameSchedule(groupedDF):
     # get the average of difference in time of the data frame
     isDaily = isDFdailySchedule(groupedDF, DATE_COL)
     
@@ -204,15 +218,48 @@ def dataFrameSchedule(groupedDF, fourierThreshold):
     isMonthly = isDFMonthlySchedule(groupedDF,DATE_COL)
 
     if isDaily:
-        return dailyDFSchedule(groupedDF,DATE_COL)
+        return (scheduleTypeEnum.Daily,dailyDFSchedule(groupedDF,DATE_COL))
     elif isWeekly:
-        return weeklyDFSchedule(groupedDF,DATE_COL)
+        return (scheduleTypeEnum.Weekly,weeklyDFSchedule(groupedDF,DATE_COL))
     elif isMonthly:
-        return monthlyDFSchedule(groupedDF,DATE_COL)
+        return (scheduleTypeEnum.Monthly,monthlyDFSchedule(groupedDF,DATE_COL))
     else:
-        return {}
+        return (scheduleTypeEnum.NoSchedule,[])
+
+
+# ------------------------- Utilities ---------------------------------------------
+
+def extractDFfromStringIndexPairs(dataFrame, stringIndexPairs):
+    indList = []
+    for pair in stringIndexPairs:
+        indList.append(pair[1])
+    return dataFrame.iloc(indList)
+
+
+# ------------------------- Implementation of schedulers --------------------------
 
 # combine all functions to get schedules
-def getSchedules(dataFrame):
-    # TODO: put everything together
-    return {}
+def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum,scheduleEnum):
+
+    originalDataFrame = dataFrame
+    textProcessedDF = textProcessDF(dataFrame,textProcessEnum,DESC_COL)
+    processedDescriptionArray = textProcessedDF[DESC_COL].to_numpy()
+    binerPredicate = None
+    # TODO: pass in options
+    if groupAlgoEnum == groupingAlgorithm.FirstNdigits:
+        binerPredicate = lambda x,y: NcharMatch(x,y)
+    elif groupAlgoEnum == groupingAlgorithm.LastNdigits:
+        binerPredicate = lambda x,y: reverseNcharMatch(x,y)
+    elif groupAlgoEnum == groupingAlgorithm.StringSimilarity:
+        binerPredicate = lambda x,y: stringSimilarity(x,y)
+    else:
+        return []
+    binnedStringsAndIndeces = binStringObjectsByPredicate(processedDescriptionArray,binerPredicate)
+
+    scheduledDataFrames = []
+    for binEntry in binnedStringsAndIndeces:
+        intermediateDataFrame = extractDFfromStringIndexPairs(originalDataFrame,binEntry)
+        schedule = dataFrameSchedule(intermediateDataFrame)
+        if schedule[0] != scheduleEnum.NoSchedule:
+            scheduledDataFrames.append((schedule,intermediateDataFrame))
+    return scheduledDataFrames
