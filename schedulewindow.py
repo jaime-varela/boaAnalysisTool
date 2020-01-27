@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from uiUtilities.pandasModel import PandasModel
 from uiUtilities.dropdownData import stringToEnumGrouping,stringToEnumTextProcess
 from uiUtilities.dropdownData import dayOfWeekToName, EnumScheduleToString
+from uiUtilities.dropdownData import settingsDefault
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -160,6 +161,9 @@ class Ui_MainWindow(object):
     def customizedInit(self):
         self.algorithmSelection.addItems(stringToEnumGrouping.keys())
         self.textProcessSelection.addItems(stringToEnumTextProcess.keys())
+        self.firstNchar.setValue(settingsDefault['firstNchar'])
+        self.lastNchar.setValue(settingsDefault['lastNchar'])
+        self.similarityMeasure.setValue(settingsDefault['similarityMeasure'])
         return
 
 

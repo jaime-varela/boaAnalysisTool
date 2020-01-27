@@ -31,3 +31,10 @@ EnumScheduleToString = {
     scheduleTypeEnum.Monthly : 'Monthly',
     scheduleTypeEnum.NoSchedule : ''
 }
+
+
+settingsDefault = {
+    'firstNchar' : 6,
+    'lastNchar' : 4,
+    'similarityMeasure' : 80.0 
+}
