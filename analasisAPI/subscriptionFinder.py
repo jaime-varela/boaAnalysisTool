@@ -125,6 +125,7 @@ def binStringObjectsByPredicate(stringArray, predicate):
         if counter == 0:
             retVal.append([(strval,counter)])
             counter += 1
+            continue
         predicateValueFound = False
         for trialStrArray in retVal:
             representativeString = trialStrArray[0][0]
@@ -156,6 +157,10 @@ def isDFdailySchedule(groupedDF,timeColName):
     timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
     fivedays = 5*oneday
+    print(timeDiff.seconds,fivedays)
+    import math
+    if(math.isnan(timeDiff.seconds)):
+        print(groupedDF)
     if timeDiff.seconds > fivedays:
         return False
 
@@ -167,7 +172,7 @@ def isDFweeklySchedule(groupedDF,timeColName):
     oneday = 24 * 60 * 60
     sevendays = 7*oneday
     fudgeFactor = 1.1
-    if timeDiff.seconds > fudgeFactor *sevendays:
+    if timeDiff.seconds > fudgeFactor *sevendays and timeDiff.seconds < 2 * oneday:
         return False
     if isDFdailySchedule(groupedDF,timeColName):
         return False    
@@ -233,13 +238,13 @@ def extractDFfromStringIndexPairs(dataFrame, stringIndexPairs):
     indList = []
     for pair in stringIndexPairs:
         indList.append(pair[1])
-    return dataFrame.iloc(indList)
+    return dataFrame.iloc[indList,:]
 
 
 # ------------------------- Implementation of schedulers --------------------------
 
 # combine all functions to get schedules
-def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum,scheduleEnum):
+def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum):
 
     originalDataFrame = dataFrame
     textProcessedDF = textProcessDF(dataFrame,textProcessEnum,DESC_COL)
@@ -260,6 +265,6 @@ def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum,scheduleEnum):
     for binEntry in binnedStringsAndIndeces:
         intermediateDataFrame = extractDFfromStringIndexPairs(originalDataFrame,binEntry)
         schedule = dataFrameSchedule(intermediateDataFrame)
-        if schedule[0] != scheduleEnum.NoSchedule:
+        if schedule[0] != scheduleTypeEnum.NoSchedule:
             scheduledDataFrames.append((schedule,intermediateDataFrame))
     return scheduledDataFrames

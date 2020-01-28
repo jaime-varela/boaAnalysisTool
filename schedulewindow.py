@@ -8,13 +8,21 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 
 # custom imports
+from analasisAPI.fileLoader import LoadFile 
+from analasisAPI.fileLoader import DESC_COL, DATE_COL, AMNT_COL, BAL_COL
+from uiUtilities.pandasModel import PandasModel
+
 from uiUtilities.pandasModel import PandasModel
 from uiUtilities.dropdownData import stringToEnumGrouping,stringToEnumTextProcess
 from uiUtilities.dropdownData import dayOfWeekToName, EnumScheduleToString
 from uiUtilities.dropdownData import settingsDefault
+
+from analasisAPI.subscriptionFinder import getSchedules
+from analasisAPI.subscriptionFinder import scheduleTypeEnum
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -164,7 +172,78 @@ class Ui_MainWindow(object):
         self.firstNchar.setValue(settingsDefault['firstNchar'])
         self.lastNchar.setValue(settingsDefault['lastNchar'])
         self.similarityMeasure.setValue(settingsDefault['similarityMeasure'])
+
+        # main view data frame
+        self.scheduleDataFrame = None
+
+
+        # file loader
+        self.dataFrame = None
+        self.actionLoad.triggered.connect(lambda: self.loadFile())
+
+        # export menu
+        self.actionExport.triggered.connect(lambda: self.exportFile())
+
+        # # apply button
+        self.applyButton.clicked.connect(lambda: self.applyScheduler())
         return
+
+    def loadFile(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(
+                        None,
+                        "QFileDialog.getOpenFileName()",
+                        "",
+                        "CSV Files (*.csv);;Text Files (*.txt);;All Files (*)",
+                        options=options)
+        if fileName:
+            try:                
+                self.dataFrame = LoadFile(fileName)
+                self.dataFrame = self.dataFrame.sort_values(by=[DATE_COL])
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText("File loaded, apply query.")
+                msgBox.setWindowTitle("Valid File")
+                msgBox.show()
+                msgBox.exec_()
+            except:
+                print(sys.exc_info()[0])
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText("File type not supported.")
+                msgBox.setWindowTitle("Invalid File")
+                msgBox.show()
+                msgBox.exec()
+
+    def exportFile(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(None,"QFileDialog.getSaveFileName()","","CSV files (*.csv)", options=options)
+        if fileName:
+            try:
+                self.scheduleDataFrame.to_csv(fileName)
+            except:
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgBox.setText("File type not supported.")
+                msgBox.setWindowTitle("Invalid File")
+                msgBox.show()
+
+
+    def applyScheduler(self):
+        FirstNchar = self.firstNchar.value()
+        LastMchar = self.lastNchar.value()
+        algorithm = str(self.algorithmSelection.currentText())
+        textProcess = str(self.textProcessSelection.currentText())
+        similarity = self.similarityMeasure.value()
+
+        textProcessEnum = stringToEnumTextProcess[textProcess]
+        algoEnum = stringToEnumGrouping[algorithm]
+        scheduledDataFrames = getSchedules(self.dataFrame, textProcessEnum, algoEnum)
+        for scheduleEntry in scheduledDataFrames:
+            if scheduleEntry[0][0] == scheduleTypeEnum.Monthly:
+                print(scheduleEntry[1])
 
 
 

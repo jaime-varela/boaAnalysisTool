@@ -334,6 +334,7 @@ class Ui_MainWindow(object):
                 msgBox.setText("File type not supported.")
                 msgBox.setWindowTitle("Invalid File")
                 msgBox.show()
+                msgBox.exec()
 
             self.loadTable()
             self.loadSummary(loadDeposit=True)
