@@ -146,7 +146,7 @@ def binStringObjectsByPredicate(stringArray, predicate):
 def averageDFTimeDifference(groupedDF, timeColName):
     newDF = groupedDF.sort_values(timeColName, ascending=True)
     newDF = newDF[timeColName].diff()
-    return newDF.mean()
+    return newDF.mean().total_seconds()
 
 
 
@@ -157,11 +157,7 @@ def isDFdailySchedule(groupedDF,timeColName):
     timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
     fivedays = 5*oneday
-    print(timeDiff.seconds,fivedays)
-    import math
-    if(math.isnan(timeDiff.seconds)):
-        print(groupedDF)
-    if timeDiff.seconds > fivedays:
+    if timeDiff > fivedays:
         return False
 
     return True
@@ -172,7 +168,8 @@ def isDFweeklySchedule(groupedDF,timeColName):
     oneday = 24 * 60 * 60
     sevendays = 7*oneday
     fudgeFactor = 1.1
-    if timeDiff.seconds > fudgeFactor *sevendays and timeDiff.seconds < 2 * oneday:
+
+    if timeDiff > fudgeFactor *sevendays:
         return False
     if isDFdailySchedule(groupedDF,timeColName):
         return False    
@@ -184,7 +181,7 @@ def isDFMonthlySchedule(groupedDF,timeColName):
     oneday = 24 * 60 * 60
     month = 30*oneday
     fudgeFactor = 1.2
-    if timeDiff.seconds > fudgeFactor * month:
+    if timeDiff > fudgeFactor * month:
         return False
     if isDFdailySchedule(groupedDF,timeColName) or isDFweeklySchedule(groupedDF,timeColName):
         return False
@@ -209,12 +206,14 @@ def weeklyDFSchedule(groupedDF,timeColName):
 def monthlyDFSchedule(groupedDF,timeColName):
     if not isDFMonthlySchedule(groupedDF,timeColName):
         return {}
-    dayOfMonth = groupedDF[timeColName].apply(lambda x: x.day())
+    dayOfMonth = groupedDF[timeColName].apply(lambda x: x.day)
     return dayOfMonth.mode()
 
 
 # returns a numeric value between zero and one if a signal has a period
 def dataFrameSchedule(groupedDF):
+    if len(groupedDF.index) <= 2:
+        return (scheduleTypeEnum.NoSchedule,[])
     # get the average of difference in time of the data frame
     isDaily = isDFdailySchedule(groupedDF, DATE_COL)
     
@@ -268,3 +267,6 @@ def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum):
         if schedule[0] != scheduleTypeEnum.NoSchedule:
             scheduledDataFrames.append((schedule,intermediateDataFrame))
     return scheduledDataFrames
+
+
+#TODO TODO: date ranges filtering
