@@ -9,7 +9,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
-
+# TODO TODO: date range filtering
 
 # custom imports
 from analasisAPI.fileLoader import LoadFile 
@@ -23,6 +23,7 @@ from uiUtilities.dropdownData import settingsDefault
 
 from analasisAPI.subscriptionFinder import getSchedules
 from analasisAPI.subscriptionFinder import scheduleTypeEnum
+from analasisAPI.subscriptionFinder import getRepresentativeDFfromSchedules
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -175,6 +176,7 @@ class Ui_MainWindow(object):
 
         # main view data frame
         self.scheduleDataFrame = None
+        self.schedules = []
 
 
         # file loader
@@ -238,12 +240,20 @@ class Ui_MainWindow(object):
         textProcess = str(self.textProcessSelection.currentText())
         similarity = self.similarityMeasure.value()
 
+
         textProcessEnum = stringToEnumTextProcess[textProcess]
         algoEnum = stringToEnumGrouping[algorithm]
         scheduledDataFrames = getSchedules(self.dataFrame, textProcessEnum, algoEnum)
+        self.schedules = scheduledDataFrames
+        self.scheduleDataFrame = getRepresentativeDFfromSchedules(scheduledDataFrames)
+        model = PandasModel(self.scheduleDataFrame)
+        self.tableView.setModel(model)
+        self.tableView.setSortingEnabled(True)
+
+
         for scheduleEntry in scheduledDataFrames:
             if scheduleEntry[0][0] == scheduleTypeEnum.Monthly:
-                print(scheduleEntry[1])
+                print(scheduleEntry[0][1])
 
 
 

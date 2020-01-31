@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
-from .fileLoader import DATE_COL, DESC_COL
+from .fileLoader import DATE_COL, DESC_COL, AMNT_COL
 register_matplotlib_converters()
 
 # it has been decided that using auto-correlation and other tools is not beneficial for schedule finding for this data set type
@@ -107,7 +107,7 @@ def stringSimilarity(str1,str2 , threshold = 0.80):
 
 # It is likely that case by case versions of each binning scenario will
 # have lower complexity algorithms.  Any binning where an ordering relation 
-# is preserved can be easily solved.  The string similarity algorithm might be the trickiest.
+# is preserved can be easily solved.  The string similarity algorithm might be the trickiest.Schedule
 def binStringObjectsByPredicate(stringArray, predicate):
     '''
         Very dumb O(N^2) algorithm which returns an array of arrays of the form:
@@ -152,9 +152,33 @@ def averageDFTimeDifference(groupedDF, timeColName):
 
 #----------------------- Schedule Predicates ------------------------------------------------------
 
-# TODO TODO TODO: have a length comparison in predicates.  small arrays can't be analyzed efficiently.
+# groupedDF is assumed to be sorted
+
+def isDFcountInDailyRange(groupedDF,timeColName):
+    firstRow = groupedDF.iloc[0]
+    lastRow = groupedDF.iloc[-1]
+    startDate = firstRow[timeColName]
+    endDate = lastRow[timeColName]
+    timeRange = (endDate - startDate)
+    totalSeconds = timeRange.total_seconds()
+    NumberOfDays = totalSeconds / (24*60*60).count
+    NumberOfWeeks = NumberOfDays / 7
+
+    nMin = 2 * NumberOfWeeks # twice a week
+    nMax = NumberOfDays # seven days a week
+
+    Nentries = groupedDF[timeColName].groupby([timeColName]).count()
+    if Nentries >= nMin and Nentries <= nMax:
+        return True
+    return False
+
+
+
 def isDFdailySchedule(groupedDF,timeColName):
     timeDiff = averageDFTimeDifference(groupedDF, timeColName)
+    # if not isDFcountInDailyRange(groupedDF,timeColName):
+    #     return False
+
     oneday = 24 * 60 * 60
     fivedays = 5*oneday
     if timeDiff > fivedays:
@@ -195,19 +219,20 @@ def dailyDFSchedule(groupedDF,timeColName):
         return {}
     daysOfWeek = groupedDF[timeColName].apply(lambda x: x.weekday())
     daysOfWeek = daysOfWeek.unique()
+    #TODO: remove sporadic days from data
     return daysOfWeek
 
 def weeklyDFSchedule(groupedDF,timeColName):
     if not isDFweeklySchedule(groupedDF,timeColName):
         return {}
     dayOfWeek = groupedDF[timeColName].apply(lambda x: x.weekday())
-    return dayOfWeek.mode()
+    return dayOfWeek.mode().iloc[0] # FIXME: right now just picking first one
 
 def monthlyDFSchedule(groupedDF,timeColName):
     if not isDFMonthlySchedule(groupedDF,timeColName):
         return {}
-    dayOfMonth = groupedDF[timeColName].apply(lambda x: x.day)
-    return dayOfMonth.mode()
+    dayOfMonth = groupedDF[timeColName].apply(lambda x: int(x.day))
+    return dayOfMonth.mode().iloc[0]
 
 
 # returns a numeric value between zero and one if a signal has a period
@@ -269,4 +294,17 @@ def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum):
     return scheduledDataFrames
 
 
-#TODO TODO: date ranges filtering
+def getRepresentativeDFfromSchedules(scheduledDataFrames):
+    columns = ['Description','Frequency','Avg. Cost','Schedule']
+    dataValues = []
+    for scheduleEntry in scheduledDataFrames:
+        description = scheduleEntry[1][DESC_COL].iloc[0]
+        datum = [description,scheduleEntry[0][0],scheduleEntry[1][AMNT_COL].mean(),scheduleEntry[0][1]]
+        dataValues.append(datum)
+    return pd.DataFrame(dataValues,columns=columns)
+
+
+
+        
+
+
