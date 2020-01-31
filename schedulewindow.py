@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 # TODO TODO: date range filtering
 
 # custom imports
-from analasisAPI.fileLoader import LoadFile 
+from analasisAPI.fileLoader import LoadFile
 from analasisAPI.fileLoader import DESC_COL, DATE_COL, AMNT_COL, BAL_COL
 from uiUtilities.pandasModel import PandasModel
 
@@ -187,6 +187,7 @@ class Ui_MainWindow(object):
         self.actionExport.triggered.connect(lambda: self.exportFile())
 
         # # apply button
+        self.isProcessing = False
         self.applyButton.clicked.connect(lambda: self.applyScheduler())
         return
 
@@ -200,7 +201,7 @@ class Ui_MainWindow(object):
                         "CSV Files (*.csv);;Text Files (*.txt);;All Files (*)",
                         options=options)
         if fileName:
-            try:                
+            try:
                 self.dataFrame = LoadFile(fileName)
                 self.dataFrame = self.dataFrame.sort_values(by=[DATE_COL])
                 msgBox = QMessageBox()
@@ -234,6 +235,10 @@ class Ui_MainWindow(object):
 
 
     def applyScheduler(self):
+        if self.isProcessing:
+            return
+        self.isProcessing = True
+        self.applyButton.setDisabled(True)
         FirstNchar = self.firstNchar.value()
         LastMchar = self.lastNchar.value()
         algorithm = str(self.algorithmSelection.currentText())
@@ -250,10 +255,14 @@ class Ui_MainWindow(object):
         self.tableView.setModel(model)
         self.tableView.setSortingEnabled(True)
 
+        # -- sizing --
+        self.tableView.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
-        for scheduleEntry in scheduledDataFrames:
-            if scheduleEntry[0][0] == scheduleTypeEnum.Monthly:
-                print(scheduleEntry[0][1])
+        # for scheduleEntry in scheduledDataFrames:
+        #     if scheduleEntry[0][0] == scheduleTypeEnum.Monthly:
+        #         print(scheduleEntry[0][1])
+        self.isProcessing = False
+        self.applyButton.setDisabled(False)
 
 
 

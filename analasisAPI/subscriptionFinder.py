@@ -161,13 +161,13 @@ def isDFcountInDailyRange(groupedDF,timeColName):
     endDate = lastRow[timeColName]
     timeRange = (endDate - startDate)
     totalSeconds = timeRange.total_seconds()
-    NumberOfDays = totalSeconds / (24*60*60).count
+    NumberOfDays = totalSeconds / (24*60*60)
     NumberOfWeeks = NumberOfDays / 7
 
     nMin = 2 * NumberOfWeeks # twice a week
     nMax = NumberOfDays # seven days a week
 
-    Nentries = groupedDF[timeColName].groupby([timeColName]).count()
+    Nentries = len(groupedDF[timeColName].unique())
     if Nentries >= nMin and Nentries <= nMax:
         return True
     return False
@@ -176,8 +176,8 @@ def isDFcountInDailyRange(groupedDF,timeColName):
 
 def isDFdailySchedule(groupedDF,timeColName):
     timeDiff = averageDFTimeDifference(groupedDF, timeColName)
-    # if not isDFcountInDailyRange(groupedDF,timeColName):
-    #     return False
+    if not isDFcountInDailyRange(groupedDF,timeColName):
+        return False
 
     oneday = 24 * 60 * 60
     fivedays = 5*oneday
