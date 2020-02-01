@@ -26,6 +26,30 @@ The system isn't perfect and requires more work.  For example in the above sched
 
 For strange expenses the query window can be used.  At some point I will make the table clickable to jump to the set of expenses associated with each entry.
 
+
+# Running and using the program
+
+For the dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+For the scheduler run the following (using python3):
+
+```
+python schedulewindow.py 
+```
+
+for the query window
+
+```
+python querywindow.py 
+```
+
+For each application use the "File->Load" button on the top left to find and load your bank statement.
+
+
 # Libraries in use
 
 1.) pandas
