@@ -20,6 +20,7 @@ from uiUtilities.pandasModel import PandasModel
 from uiUtilities.dropdownData import stringToEnumGrouping,stringToEnumTextProcess
 from uiUtilities.dropdownData import dayOfWeekToName, EnumScheduleToString
 from uiUtilities.dropdownData import settingsDefault
+from uiUtilities.makeScheduleDFdisplayable import makeScheduleDFdisplayable
 
 from analasisAPI.subscriptionFinder import getSchedules
 from analasisAPI.subscriptionFinder import scheduleTypeEnum
@@ -244,13 +245,15 @@ class Ui_MainWindow(object):
         algorithm = str(self.algorithmSelection.currentText())
         textProcess = str(self.textProcessSelection.currentText())
         similarity = self.similarityMeasure.value()
-
+        optionsDict = {'firstNchar': FirstNchar,
+                        'lastNchar': LastMchar,
+                        'similarity': similarity}
 
         textProcessEnum = stringToEnumTextProcess[textProcess]
         algoEnum = stringToEnumGrouping[algorithm]
-        scheduledDataFrames = getSchedules(self.dataFrame, textProcessEnum, algoEnum)
+        scheduledDataFrames = getSchedules(self.dataFrame, textProcessEnum, algoEnum,optionsDict)
         self.schedules = scheduledDataFrames
-        self.scheduleDataFrame = getRepresentativeDFfromSchedules(scheduledDataFrames)
+        self.scheduleDataFrame = makeScheduleDFdisplayable(getRepresentativeDFfromSchedules(scheduledDataFrames))
         model = PandasModel(self.scheduleDataFrame)
         self.tableView.setModel(model)
         self.tableView.setSortingEnabled(True)

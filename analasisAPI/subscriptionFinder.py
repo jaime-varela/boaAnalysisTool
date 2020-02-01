@@ -79,7 +79,7 @@ def NcharMatch(str1, str2, searchIndexStart = 0, nChars = 6):
     compareStr2 = str2[searchIndexStart:searchIndexStart + nChars]
     return compareStr1.lower() == compareStr2.lower()
 
-def reverseNcharMatch(str1,str2, reverseIndexStart = 0, nChars = 6):
+def reverseNcharMatch(str1,str2, reverseIndexStart = 0, nChars = 4):
     #TODO: assert check on params
     startIndex1 = len(str1) - (reverseIndexStart + nChars)
     startIndex2 = len(str2) - (reverseIndexStart + nChars)
@@ -153,7 +153,7 @@ def averageDFTimeDifference(groupedDF, timeColName):
 #----------------------- Schedule Predicates ------------------------------------------------------
 
 # groupedDF is assumed to be sorted
-
+#TODO : refactor out the code duplication in the count predicates
 def isDFcountInDailyRange(groupedDF,timeColName):
     firstRow = groupedDF.iloc[0]
     lastRow = groupedDF.iloc[-1]
@@ -187,11 +187,36 @@ def isDFdailySchedule(groupedDF,timeColName):
     return True
 
 
+def isDFcountInWeeklyRange(groupedDF,timeColName):
+    firstRow = groupedDF.iloc[0]
+    lastRow = groupedDF.iloc[-1]
+    startDate = firstRow[timeColName]
+    endDate = lastRow[timeColName]
+    timeRange = (endDate - startDate)
+    totalSeconds = timeRange.total_seconds()
+    NumberOfDays = totalSeconds / (24*60*60)
+    NumberOfWeeks = NumberOfDays / 7
+
+
+    weekMinFudgeFactor = 0.85
+    weekMaxFudgeFactor = 1.1
+    nMin = weekMinFudgeFactor * NumberOfWeeks # twice a week
+    nMax = weekMaxFudgeFactor * NumberOfWeeks # seven days a week
+
+    Nentries = len(groupedDF[timeColName].unique())
+    if Nentries >= nMin and Nentries <= nMax:
+        return True
+    return False
+
+
 def isDFweeklySchedule(groupedDF,timeColName):
     timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
     sevendays = 7*oneday
     fudgeFactor = 1.1
+
+    if not isDFcountInWeeklyRange(groupedDF,timeColName):
+        return False
 
     if timeDiff > fudgeFactor *sevendays:
         return False
@@ -199,12 +224,37 @@ def isDFweeklySchedule(groupedDF,timeColName):
         return False    
     return True
 
+def isDFcountInMonthlyRange(groupedDF,timeColName):
+    firstRow = groupedDF.iloc[0]
+    lastRow = groupedDF.iloc[-1]
+    startDate = firstRow[timeColName]
+    endDate = lastRow[timeColName]
+    timeRange = (endDate - startDate)
+    totalSeconds = timeRange.total_seconds()
+    NumberOfDays = totalSeconds / (24*60*60)
+    NumberOfWeeks = NumberOfDays / 7
+
+
+    monthMinFudgeFactor = 0.85
+    monthMaxFudgeFactor = 1.1
+    nMin = monthMinFudgeFactor * (NumberOfWeeks / 4.0)# twice a week
+    nMax = monthMaxFudgeFactor * (NumberOfWeeks / 4.0)# seven days a week
+
+    Nentries = len(groupedDF[timeColName].unique())
+    if Nentries >= nMin and Nentries <= nMax:
+        return True
+    return False
+
+
 
 def isDFMonthlySchedule(groupedDF,timeColName):
     timeDiff = averageDFTimeDifference(groupedDF, timeColName)
     oneday = 24 * 60 * 60
     month = 30*oneday
     fudgeFactor = 1.2
+    if not isDFcountInMonthlyRange(groupedDF,timeColName):
+        return False
+
     if timeDiff > fudgeFactor * month:
         return False
     if isDFdailySchedule(groupedDF,timeColName) or isDFweeklySchedule(groupedDF,timeColName):
@@ -232,7 +282,9 @@ def monthlyDFSchedule(groupedDF,timeColName):
     if not isDFMonthlySchedule(groupedDF,timeColName):
         return {}
     dayOfMonth = groupedDF[timeColName].apply(lambda x: int(x.day))
-    return dayOfMonth.mode().iloc[0]
+    # NOTE: the days of the month are returned as negative in order to discriminate against
+    # weekly values without needing the schedule enum.
+    return (-1) * dayOfMonth.mode().iloc[0]
 
 
 # returns a numeric value between zero and one if a signal has a period
@@ -268,7 +320,7 @@ def extractDFfromStringIndexPairs(dataFrame, stringIndexPairs):
 # ------------------------- Implementation of schedulers --------------------------
 
 # combine all functions to get schedules
-def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum):
+def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum ,optionsDict):
 
     originalDataFrame = dataFrame
     textProcessedDF = textProcessDF(dataFrame,textProcessEnum,DESC_COL)
@@ -276,11 +328,11 @@ def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum):
     binerPredicate = None
     # TODO: pass in options
     if groupAlgoEnum == groupingAlgorithm.FirstNdigits:
-        binerPredicate = lambda x,y: NcharMatch(x,y)
+        binerPredicate = lambda x,y: NcharMatch(x,y,nChars=optionsDict['firstNchar'])
     elif groupAlgoEnum == groupingAlgorithm.LastNdigits:
-        binerPredicate = lambda x,y: reverseNcharMatch(x,y)
+        binerPredicate = lambda x,y: reverseNcharMatch(x,y,nChars=optionsDict['lastNchar'])
     elif groupAlgoEnum == groupingAlgorithm.StringSimilarity:
-        binerPredicate = lambda x,y: stringSimilarity(x,y)
+        binerPredicate = lambda x,y: stringSimilarity(x,y,threshold=optionsDict['similarity'])
     else:
         return []
     binnedStringsAndIndeces = binStringObjectsByPredicate(processedDescriptionArray,binerPredicate)
@@ -293,9 +345,11 @@ def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum):
             scheduledDataFrames.append((schedule,intermediateDataFrame))
     return scheduledDataFrames
 
+#TODO: get rid of this global and update makeScheduleDFdisplayable
+SCHEDULE_COLUMNS = ['Description','Frequency','Avg. Cost','Schedule']
 
 def getRepresentativeDFfromSchedules(scheduledDataFrames):
-    columns = ['Description','Frequency','Avg. Cost','Schedule']
+    columns = SCHEDULE_COLUMNS
     dataValues = []
     for scheduleEntry in scheduledDataFrames:
         description = scheduleEntry[1][DESC_COL].iloc[0]

@@ -22,6 +22,10 @@ A user can change the settings of the grouping algorithms in the right side pane
 
 ![Schedule Main View](./readmeResources/scheduleMainView.png)
 
+The system isn't perfect and requires more work.  For example in the above schedule there is an issue with an expense that has both debits and credits with a similar name and results in a weird daily deposit (the fully blacked out entry.  Entries have been blacked out to removed personal information).
+
+For strange expenses the query window can be used.  At some point I will make the table clickable to jump to the set of expenses associated with each entry.
+
 # Libraries in use
 
 1.) pandas

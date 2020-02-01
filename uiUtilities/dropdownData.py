@@ -25,6 +25,17 @@ dayOfWeekToName = {
     6 : 'Sunday'
 }
 
+dayOfWeekToLetter = {
+    0 : 'M',
+    1 : 'T',
+    2 : 'W',
+    3 : 'Th',
+    4 : 'F',
+    5 : 'S',
+    6 : 'Su'
+}
+
+
 EnumScheduleToString = {
     scheduleTypeEnum.Daily : 'Daily',
     scheduleTypeEnum.Weekly : 'Weekly',
