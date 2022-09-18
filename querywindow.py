@@ -26,7 +26,7 @@ class tableDisplayMode(Enum):
     DEPOSITS = 2
     DEBITS = 3
 
-class Ui_MainWindow(object):
+class Query_Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1260, 811)
@@ -377,7 +377,7 @@ class Ui_MainWindow(object):
         else:
             self.viewDataFrame = self.dataFrame
         self.loadTable()
-        self.loadSummary()
+        self.loadSummary(loadDeposit=True)
 
     def showPlots(self):
         plotBalanceAndCosts(self.viewDataFrame,DATE_COL,AMNT_COL,BAL_COL)
@@ -438,7 +438,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    ui = Query_Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
