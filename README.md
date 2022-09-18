@@ -50,6 +50,12 @@ python querywindow.py
 For each application use the "File->Load" button on the top left to find and load your bank statement.
 
 
+You may have to run:
+
+```
+sudo apt install --reinstall qt5-default qttools5* pyqt5-dev-tools libqt5* qt5-* qtbase5-* qtcreator build-essential qtdeclarative5* libqt5webkit5* mesa-common-* libglu1-mesa-* qtbase5-dev
+```
+on linux systems to get the dependencies right.
 # Libraries in use
 
 1.) pandas

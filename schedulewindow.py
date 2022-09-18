@@ -261,9 +261,6 @@ class Ui_MainWindow(object):
         # -- sizing --
         self.tableView.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
-        # for scheduleEntry in scheduledDataFrames:
-        #     if scheduleEntry[0][0] == scheduleTypeEnum.Monthly:
-        #         print(scheduleEntry[0][1])
         self.isProcessing = False
         self.applyButton.setDisabled(False)
 
