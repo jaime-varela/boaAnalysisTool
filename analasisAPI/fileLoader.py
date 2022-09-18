@@ -26,10 +26,13 @@ def LoadFile(filePath):
         Output: 
             pandas dataframe
     '''
-    dtypes = {'A':'str','B':'str','C':'float','D':'float'}
     parse_dates = [0]
-    dataFrame = pd.read_csv(filePath,skiprows=[0,1,2,3,4,5,7],dtype=dtypes,parse_dates=parse_dates)
+    dataFrame = pd.read_csv(filePath,skiprows=[0,1,2,3,4,5,7],parse_dates=parse_dates)
     dataFrame[DESC_COL] = dataFrame[DESC_COL].apply(lambda x: stripCommas(x))
+    dataFrame[AMNT_COL] = dataFrame[AMNT_COL].apply(lambda x: stripCommas(x))
+    dataFrame[BAL_COL] = dataFrame[BAL_COL].apply(lambda x: stripCommas(x))
+    dataFrame[AMNT_COL] = dataFrame[AMNT_COL].astype('float')
+    dataFrame[BAL_COL] = dataFrame[BAL_COL].astype('float')    
     return dataFrame
 
 

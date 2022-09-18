@@ -22,7 +22,8 @@ regexDF = filterDataFrameByRegex(dataFrame,"uber")
 
 range1filter = filterDataFrameByDate(dataFrame,[datetime.datetime(2021,12,2),datetime.datetime(2022,12,22)])
 
-
+# %%
+dataFrame.dtypes
 
 # %%
 print(dataFrame.columns)
