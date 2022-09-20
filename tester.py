@@ -1,4 +1,5 @@
 # %%
+from globals.column_names import BOA_DATE_COL
 from analasisAPI.fileLoader import LoadFile 
 from analasisAPI.queries import filterDataFrameByRegex
 from analasisAPI.queries import filterDataFrameByDate
@@ -8,7 +9,7 @@ from analasisAPI.plotUtilities import plotDataFrameTimeSeriesCol
 import datetime
 
 
-from analasisAPI.fileLoader import combineBOAfiles
+from analasisAPI.bankUtils import combineBOAfiles
 # %%
 # This should be the path to the file of your untouched BOA statement
 filepath = "/home/jvarela/Documents/financial/stmt.csv"
@@ -23,8 +24,10 @@ regexDF = filterDataFrameByRegex(dataFrame,"uber")
 range1filter = filterDataFrameByDate(dataFrame,[datetime.datetime(2021,12,2),datetime.datetime(2022,12,22)])
 
 # %%
+import pandas as pd
 dataFrame.dtypes
-
+val = pd.infer_freq(dataFrame[BOA_DATE_COL])
+print(val)
 # %%
 print(dataFrame.columns)
 from classification.rule_based_classfier import classify_statement_from_rule_set

@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 # custom imports
 from analasisAPI.fileLoader import LoadFile
-from analasisAPI.fileLoader import DESC_COL, DATE_COL, AMNT_COL, BAL_COL
+from analasisAPI.fileLoader import BOA_DESC_COL, BOA_DATE_COL, BOA_AMNT_COL, BOA_BAL_COL
 from uiUtilities.pandasModel import PandasModel
 
 from uiUtilities.pandasModel import PandasModel
@@ -204,7 +204,7 @@ class Ui_MainWindow(object):
         if fileName:
             try:
                 self.dataFrame = LoadFile(fileName)
-                self.dataFrame = self.dataFrame.sort_values(by=[DATE_COL])
+                self.dataFrame = self.dataFrame.sort_values(by=[BOA_DATE_COL])
                 msgBox = QMessageBox()
                 msgBox.setIcon(QMessageBox.Information)
                 msgBox.setText("File loaded, apply query.")

@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 #custom headers
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from analasisAPI.fileLoader import LoadFile 
-from analasisAPI.fileLoader import DESC_COL, DATE_COL, AMNT_COL, BAL_COL
+from analasisAPI.fileLoader import BOA_DESC_COL, BOA_DATE_COL, BOA_AMNT_COL, BOA_BAL_COL
 from uiUtilities.pandasModel import PandasModel
 
 from analasisAPI.queries import queryBankDataFrame

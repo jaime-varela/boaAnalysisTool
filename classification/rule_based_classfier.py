@@ -1,12 +1,5 @@
 
-
-# FIXME FIXME FIXME code duplication
-DATE_COL = 'Date'
-DESC_COL = 'Description'
-AMNT_COL = 'Amount'
-BAL_COL = 'Running Bal.'
-
-SUMMARY_CONST = 'Summary Amt.'
+from globals.column_names import BOA_DESC_COL
 
 # (expected_class: {acceptable_synonyms})  dictionary
 INTERNAL_CLASS_DICT = {
@@ -31,7 +24,7 @@ def dictionary_based_char_match(description,dict=INTERNAL_CLASS_DICT):
 def classify_statement_from_rule_set(stmt_df, classification_function=dictionary_based_char_match):
     classified_df = stmt_df
     classifications = []
-    for desc in stmt_df[DESC_COL].values:
+    for desc in stmt_df[BOA_DESC_COL].values:
         classifications.append(classification_function(desc))
     classified_df['classes'] = classifications
     return classified_df

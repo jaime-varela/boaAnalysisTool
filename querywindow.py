@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 #custom headers
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from analasisAPI.fileLoader import LoadFile 
-from analasisAPI.fileLoader import DESC_COL, DATE_COL, AMNT_COL, BAL_COL
+from analasisAPI.fileLoader import BOA_DESC_COL, BOA_DATE_COL, BOA_AMNT_COL, BOA_BAL_COL
 from uiUtilities.pandasModel import PandasModel
 
 from analasisAPI.queries import queryBankDataFrame
@@ -280,13 +280,13 @@ class Query_Ui_MainWindow(object):
 
     def loadDeposits(self):
         self.tableDisplayMode = tableDisplayMode.DEPOSITS
-        self.viewDataFrame =  self.dataFrame[self.dataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
+        self.viewDataFrame =  self.dataFrame[self.dataFrame[BOA_AMNT_COL].apply(lambda x: x > 0.0)]
         self.loadTable()
         self.loadSummary()
 
     def loadDebits(self):
         self.tableDisplayMode = tableDisplayMode.DEBITS
-        self.viewDataFrame =  self.dataFrame[self.dataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
+        self.viewDataFrame =  self.dataFrame[self.dataFrame[BOA_AMNT_COL].apply(lambda x: x < 0.0)]
         self.loadTable()
         self.loadSummary()
     
@@ -326,8 +326,8 @@ class Query_Ui_MainWindow(object):
         if fileName:
             try:
                 self.dataFrame = LoadFile(fileName)
-                self.dataFrame = self.dataFrame.sort_values(by=[DATE_COL])
-                self.viewDataFrame = self.dataFrame.sort_values(by=[DATE_COL])
+                self.dataFrame = self.dataFrame.sort_values(by=[BOA_DATE_COL])
+                self.viewDataFrame = self.dataFrame.sort_values(by=[BOA_DATE_COL])
             except:
                 msgBox = QMessageBox()
                 msgBox.setIcon(QMessageBox.Information)
@@ -357,9 +357,9 @@ class Query_Ui_MainWindow(object):
         if self.tableDisplayMode == tableDisplayMode.ALL:
             queryDF = self.dataFrame
         elif self.tableDisplayMode == tableDisplayMode.DEPOSITS:
-            queryDF = self.dataFrame[self.dataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
+            queryDF = self.dataFrame[self.dataFrame[BOA_AMNT_COL].apply(lambda x: x > 0.0)]
         else:
-            queryDF = self.dataFrame[self.dataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
+            queryDF = self.dataFrame[self.dataFrame[BOA_AMNT_COL].apply(lambda x: x < 0.0)]
 
 
         if self.isFilterByDate.isChecked() and self.isFilterRange.isChecked():
@@ -380,38 +380,38 @@ class Query_Ui_MainWindow(object):
         self.loadSummary(loadDeposit=True)
 
     def showPlots(self):
-        plotBalanceAndCosts(self.viewDataFrame,DATE_COL,AMNT_COL,BAL_COL)
+        plotBalanceAndCosts(self.viewDataFrame,BOA_DATE_COL,BOA_AMNT_COL,BOA_BAL_COL)
 
     def depositPlot(self):
-        depositPlotDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
-        plotDataFrameTimeSeriesCol(depositPlotDF, DATE_COL, AMNT_COL, timesMinusOne = False)
+        depositPlotDF = self.viewDataFrame[self.viewDataFrame[BOA_AMNT_COL].apply(lambda x: x > 0.0)]
+        plotDataFrameTimeSeriesCol(depositPlotDF, BOA_DATE_COL, BOA_AMNT_COL, timesMinusOne = False)
 
     def loadSummary(self, loadDeposit = False):
         if self.viewDataFrame is None:
             return
-        if self.viewDataFrame[AMNT_COL].count() == 0:
+        if self.viewDataFrame[BOA_AMNT_COL].count() == 0:
             return
-        summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x < 0.0)]
+        summaryDF = self.viewDataFrame[self.viewDataFrame[BOA_AMNT_COL].apply(lambda x: x < 0.0)]
         summaryText = ""
         if self.tableDisplayMode != tableDisplayMode.DEPOSITS:
             summaryText += " ----- Costs ----\n" 
-            summaryText += "total cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].sum()) + "\n"
-            summaryText += "average cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].mean()) + "\n"
-            summaryText += "median cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].median()) + "\n"
-            summaryText += "number of cost: " + str(summaryDF[AMNT_COL].count()) +"\n"
-            summaryText += "highest cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].min()) + "\n"
-            summaryText += "minimum cost: $ " + npNum2Str(-1.0 * summaryDF[AMNT_COL].max()) + "\n"
+            summaryText += "total cost: $ " + npNum2Str(-1.0 * summaryDF[BOA_AMNT_COL].sum()) + "\n"
+            summaryText += "average cost: $ " + npNum2Str(-1.0 * summaryDF[BOA_AMNT_COL].mean()) + "\n"
+            summaryText += "median cost: $ " + npNum2Str(-1.0 * summaryDF[BOA_AMNT_COL].median()) + "\n"
+            summaryText += "number of cost: " + str(summaryDF[BOA_AMNT_COL].count()) +"\n"
+            summaryText += "highest cost: $ " + npNum2Str(-1.0 * summaryDF[BOA_AMNT_COL].min()) + "\n"
+            summaryText += "minimum cost: $ " + npNum2Str(-1.0 * summaryDF[BOA_AMNT_COL].max()) + "\n"
 
         # deposits
         if loadDeposit or (self.tableDisplayMode == tableDisplayMode.DEPOSITS):
-            summaryDF = self.viewDataFrame[self.viewDataFrame[AMNT_COL].apply(lambda x: x > 0.0)]
+            summaryDF = self.viewDataFrame[self.viewDataFrame[BOA_AMNT_COL].apply(lambda x: x > 0.0)]
             summaryText += "\n ----- Deposits ----\n" 
-            summaryText += "total deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].sum()) + "\n"
-            summaryText += "average deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].mean()) + "\n"
-            summaryText += "median deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].median()) + "\n"
-            summaryText += "number of deposits: " + str(summaryDF[AMNT_COL].count()) +"\n"
-            summaryText += "highest deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].max()) + "\n"
-            summaryText += "minimum deposits: $ " + npNum2Str(1.0 * summaryDF[AMNT_COL].min()) + "\n"
+            summaryText += "total deposits: $ " + npNum2Str(1.0 * summaryDF[BOA_AMNT_COL].sum()) + "\n"
+            summaryText += "average deposits: $ " + npNum2Str(1.0 * summaryDF[BOA_AMNT_COL].mean()) + "\n"
+            summaryText += "median deposits: $ " + npNum2Str(1.0 * summaryDF[BOA_AMNT_COL].median()) + "\n"
+            summaryText += "number of deposits: " + str(summaryDF[BOA_AMNT_COL].count()) +"\n"
+            summaryText += "highest deposits: $ " + npNum2Str(1.0 * summaryDF[BOA_AMNT_COL].max()) + "\n"
+            summaryText += "minimum deposits: $ " + npNum2Str(1.0 * summaryDF[BOA_AMNT_COL].min()) + "\n"
 
 
         self.summaryText.setText(summaryText)
