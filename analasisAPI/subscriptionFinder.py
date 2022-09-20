@@ -341,11 +341,6 @@ def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum ,optionsDict):
     for binEntry in binnedStringsAndIndeces:
         intermediateDataFrame = extractDFfromStringIndexPairs(originalDataFrame,binEntry)
         schedule = dataFrameSchedule(intermediateDataFrame)
-        if intermediateDataFrame.shape[0] > 3:
-            print(intermediateDataFrame[BOA_DESC_COL].iloc[0])
-            freqSched = pd.infer_freq(intermediateDataFrame[BOA_DATE_COL],warn=False)
-            print(freqSched)
-            print(schedule)
 
         if schedule[0] != scheduleTypeEnum.NoSchedule:
             scheduledDataFrames.append((schedule,intermediateDataFrame))

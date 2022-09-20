@@ -28,6 +28,10 @@ import pandas as pd
 dataFrame.dtypes
 val = pd.infer_freq(dataFrame[BOA_DATE_COL])
 print(val)
+
+# %%
+idx = pd.date_range(start='2020/12/01', end='2020/12/30', periods=30)
+pd.infer_freq()
 # %%
 print(dataFrame.columns)
 from classification.rule_based_classfier import classify_statement_from_rule_set
