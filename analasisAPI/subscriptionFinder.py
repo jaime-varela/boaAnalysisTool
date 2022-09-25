@@ -101,7 +101,7 @@ def stringSimilarity(str1,str2 , threshold = 0.80):
 # Binning algorithm:
 
 # will have to use an O(N^2) algorithm and measure it for long term viability.
-# The O(N^2) algorithm should be find withing the low thousands but will inevitably fail for
+# The O(N^2) algorithm should be fine withing the low thousands but will inevitably fail for
 # the millions of entries.  Depending on how long it takes for bank entries to grow
 # this may not be a problem
 
