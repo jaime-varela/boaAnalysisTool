@@ -26,5 +26,5 @@ def classify_statement_from_rule_set(stmt_df, classification_function=dictionary
     classifications = []
     for desc in stmt_df[BOA_DESC_COL].values:
         classifications.append(classification_function(desc))
-    classified_df['classes'] = classifications
+    classified_df['class'] = classifications
     return classified_df

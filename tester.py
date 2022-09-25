@@ -40,10 +40,27 @@ from classification.rule_based_classfier import classify_statement_from_rule_set
 
 classified_df = classify_statement_from_rule_set(dataFrame)
 
-classified_df.drop(columns=["Running Bal.","Amount"], inplace=True, errors="ignore")
+classified_df.drop(columns=["Running Bal.","Amount","Date"], inplace=True, errors="ignore")
 
-classified_df.to_csv("test_classificatin.csv")
+classified_df = classified_df.drop_duplicates()
 
+classified_df.to_csv("training_data.csv",index=False)
+
+# %% Naive bayes classifier
+from classification.naive_bayes_classifier import classify_using_naive_bayes
+bayes_classified_df = classify_using_naive_bayes(dataFrame,training_file="/home/jvarela/Dropbox/software/bankStatementClassification/boaAnalysisTool/training_data.csv")
+# from globals.column_names import BAYES_TRAINING_DESCRIPTION_COL
+# training_df = pd.read_csv("/home/jvarela/Dropbox/software/bankStatementClassification/boaAnalysisTool/training_data.csv")
+# training_df.head(33)
+
+# for ind,row in training_df.iterrows():
+#     print(row)
+#     des= row[BAYES_TRAINING_DESCRIPTION_COL]
+bayes_classified_df.drop(columns=["Running Bal.","Amount","Date"], inplace=True, errors="ignore")
+
+bayes_classified_df = bayes_classified_df.drop_duplicates()
+
+bayes_classified_df.to_csv("classified_data.csv",index=False)
 
 # %%
 # deposit over 1k

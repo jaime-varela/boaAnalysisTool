@@ -131,3 +131,4 @@ dmypy.json
 
 # statemetn
 stmt.csv
+*.csv
