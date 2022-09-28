@@ -40,15 +40,15 @@ from classification.rule_based_classfier import classify_statement_from_rule_set
 
 classified_df = classify_statement_from_rule_set(dataFrame)
 
-classified_df.drop(columns=["Running Bal.","Amount","Date"], inplace=True, errors="ignore")
+classified_df.drop(columns=["Running Bal."], inplace=True, errors="ignore")
 
 classified_df = classified_df.drop_duplicates()
 
 classified_df.to_csv("training_data.csv",index=False)
 
 # %% Naive bayes classifier
-from classification.naive_bayes_classifier import classify_using_naive_bayes
-bayes_classified_df = classify_using_naive_bayes(dataFrame,training_file="/home/jvarela/Dropbox/software/bankStatementClassification/boaAnalysisTool/training_data.csv")
+# from classification.naive_bayes_classifier import classify_using_naive_bayes
+# bayes_classified_df = classify_using_naive_bayes(dataFrame,training_file="/home/jvarela/Dropbox/software/bankStatementClassification/boaAnalysisTool/training_data.csv")
 # from globals.column_names import BAYES_TRAINING_DESCRIPTION_COL
 # training_df = pd.read_csv("/home/jvarela/Dropbox/software/bankStatementClassification/boaAnalysisTool/training_data.csv")
 # training_df.head(33)
@@ -56,11 +56,11 @@ bayes_classified_df = classify_using_naive_bayes(dataFrame,training_file="/home/
 # for ind,row in training_df.iterrows():
 #     print(row)
 #     des= row[BAYES_TRAINING_DESCRIPTION_COL]
-bayes_classified_df.drop(columns=["Running Bal.","Amount","Date"], inplace=True, errors="ignore")
+# bayes_classified_df.drop(columns=["Running Bal.","Amount","Date"], inplace=True, errors="ignore")
 
-bayes_classified_df = bayes_classified_df.drop_duplicates()
+# bayes_classified_df = bayes_classified_df.drop_duplicates()
 
-bayes_classified_df.to_csv("classified_data.csv",index=False)
+# bayes_classified_df.to_csv("classified_data.csv",index=False)
 
 # %%
 # deposit over 1k
@@ -69,38 +69,45 @@ bayes_classified_df.to_csv("classified_data.csv",index=False)
 
 # uber costs in the last six months
 
-queryCost = queryBankDataFrame(range1filter, "micro",dateRange=[datetime.datetime(2019,9,10),datetime.datetime(2019,12,10)])
+# queryCost = queryBankDataFrame(range1filter, "micro",dateRange=[datetime.datetime(2019,9,10),datetime.datetime(2019,12,10)])
 
 
 
 # %%
 # Analyze the data frame schedules
-from analasisAPI.subscriptionFinder import textProcessDF, textProcessing,NcharMatch, binStringObjectsByPredicate
-from analasisAPI.subscriptionFinder import extractDFfromStringIndexPairs, dataFrameSchedule, scheduleTypeEnum
-from globals.column_names import BOA_DESC_COL
+# from analasisAPI.subscriptionFinder import textProcessDF, textProcessing,NcharMatch, binStringObjectsByPredicate
+# from analasisAPI.subscriptionFinder import extractDFfromStringIndexPairs, dataFrameSchedule, scheduleTypeEnum
+# from globals.column_names import BOA_DESC_COL
 
 
-originalDataFrame = dataFrame
-textProcessEnum = textProcessing.NonAlphaNumericCharRemoval
-textProcessedDF = textProcessDF(dataFrame,textProcessEnum,BOA_DESC_COL)
-processedDescriptionArray = textProcessedDF[BOA_DESC_COL].to_numpy()
-binerPredicate = None
-optionsDict = {'firstNchar': 6,
-                'lastNchar': 4,
-                'similarity': 80.0}
+# originalDataFrame = dataFrame
+# textProcessEnum = textProcessing.NonAlphaNumericCharRemoval
+# textProcessedDF = textProcessDF(dataFrame,textProcessEnum,BOA_DESC_COL)
+# processedDescriptionArray = textProcessedDF[BOA_DESC_COL].to_numpy()
+# binerPredicate = None
+# optionsDict = {'firstNchar': 6,
+#                 'lastNchar': 4,
+#                 'similarity': 80.0}
 
-binerPredicate = lambda x,y: NcharMatch(x,y,nChars=optionsDict['firstNchar'])
-binnedStringsAndIndeces = binStringObjectsByPredicate(processedDescriptionArray,binerPredicate)
+# binerPredicate = lambda x,y: NcharMatch(x,y,nChars=optionsDict['firstNchar'])
+# binnedStringsAndIndeces = binStringObjectsByPredicate(processedDescriptionArray,binerPredicate)
 
-scheduledDataFrames = []
-for binEntry in binnedStringsAndIndeces:
-    intermediateDataFrame = extractDFfromStringIndexPairs(originalDataFrame,binEntry)
-    schedule = dataFrameSchedule(intermediateDataFrame)
+# scheduledDataFrames = []
+# for binEntry in binnedStringsAndIndeces:
+#     intermediateDataFrame = extractDFfromStringIndexPairs(originalDataFrame,binEntry)
+#     schedule = dataFrameSchedule(intermediateDataFrame)
 
-    if schedule[0] != scheduleTypeEnum.NoSchedule:
-        print(intermediateDataFrame.iloc[0])
-        scheduledDataFrames.append((schedule,intermediateDataFrame))
+#     if schedule[0] != scheduleTypeEnum.NoSchedule:
+#         print(intermediateDataFrame.iloc[0])
+#         scheduledDataFrames.append((schedule,intermediateDataFrame))
 
+# %%
+classified_df.head()
+
+# %%
+from classification.classification_report_utils import classification_pi_chart
+classification_pi_chart(classified_df)
+# %%
 
 
 # %%
