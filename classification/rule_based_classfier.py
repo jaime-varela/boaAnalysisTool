@@ -9,7 +9,8 @@ INTERNAL_CLASS_DICT = {
     'goods' : {"amazon","amzn","target","cvs", "walgreens", "star market"},
     'bills' : {"geico", "eversource","allstate"},
     'investments' : {"betterment","wealthfront"},
-    'cash' : {'BKOFAMERICA','venmo', " atm "}
+    'cash' : {'BKOFAMERICA','venmo', " atm "},
+    'housing': {'jay zola','check '}
 }
 
 def dictionary_based_char_match(description,dict=INTERNAL_CLASS_DICT):

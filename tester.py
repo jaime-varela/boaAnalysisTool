@@ -9,7 +9,6 @@ from analasisAPI.queries import queryBankDataFrame
 from analasisAPI.plotUtilities import plotDataFrameTimeSeriesCol
 import datetime
 
-
 from analasisAPI.bankUtils import combineBOAfiles
 # %%
 # This should be the path to the file of your untouched BOA statement
