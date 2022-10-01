@@ -5,10 +5,7 @@ import sys
 # for small data sets using three function calls is sufficiently optimal
 
 #constants in use to locate columns
-from .fileLoader import BOA_DATE_COL
-from .fileLoader import BOA_DESC_COL
-from .fileLoader import BOA_AMNT_COL
-from .fileLoader import BOA_BAL_COL 
+from globals.column_names import DATE_COL, DESC_COL, AMNT_COL, BAL_COL
 
 
 def filterDataFrameColByPred(dataFrame, columnName,predicate):
@@ -34,7 +31,7 @@ def lower_regex_filter_predicate(compareStr, regex):
 
 def filterDataFrameByRegex(dataFrame, regex):
     boundRegexFilter = lambda strVal: lower_regex_filter_predicate(strVal,regex)
-    return filterDataFrameColByPred(dataFrame,BOA_DESC_COL,boundRegexFilter)
+    return filterDataFrameColByPred(dataFrame,DESC_COL,boundRegexFilter)
 
 def filterDataFrameByRange(dataFrame,columnName, rangeArray):
     '''
@@ -58,11 +55,11 @@ def filterDataFrameByRange(dataFrame,columnName, rangeArray):
 
 
 def filterDataFrameByDate(dataFrame, dateRange):
-    return filterDataFrameByRange(dataFrame,BOA_DATE_COL,dateRange)
+    return filterDataFrameByRange(dataFrame,DATE_COL,dateRange)
 
 # Note we keep the same methodology as BOA in that negative values are costs (sue use [-20.0,True] if you want all costs greater than 20 dollars)
 def filterDataFrameByAmount(dataFrame, amountRange):
-    return filterDataFrameByRange(dataFrame,BOA_AMNT_COL,amountRange)
+    return filterDataFrameByRange(dataFrame,AMNT_COL,amountRange)
 
 def queryBankDataFrame(dataFrame, regex = "", dateRange = [], amountRange = []):
     finalDF = dataFrame

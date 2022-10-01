@@ -1,6 +1,6 @@
 # %%
 from analasisAPI.subscriptionFinder import isDFweeklySchedule
-from globals.column_names import BOA_DATE_COL
+from globals.column_names import DATE_COL
 from analasisAPI.fileLoader import LoadFile 
 from analasisAPI.queries import filterDataFrameByRegex
 from analasisAPI.queries import filterDataFrameByDate
@@ -9,7 +9,6 @@ from analasisAPI.queries import queryBankDataFrame
 from analasisAPI.plotUtilities import plotDataFrameTimeSeriesCol
 import datetime
 
-from analasisAPI.bankUtils import combineBOAfiles
 # %%
 # This should be the path to the file of your untouched BOA statement
 filepath = "/home/jvarela/Documents/financial/stmt.csv"
@@ -26,7 +25,7 @@ range1filter = filterDataFrameByDate(dataFrame,[datetime.datetime(2021,12,2),dat
 # %%
 import pandas as pd
 dataFrame.dtypes
-val = pd.infer_freq(dataFrame[BOA_DATE_COL])
+val = pd.infer_freq(dataFrame[DATE_COL])
 print(val)
 
 # %%
@@ -76,13 +75,13 @@ classified_df.to_csv("training_data.csv",index=False)
 # Analyze the data frame schedules
 # from analasisAPI.subscriptionFinder import textProcessDF, textProcessing,NcharMatch, binStringObjectsByPredicate
 # from analasisAPI.subscriptionFinder import extractDFfromStringIndexPairs, dataFrameSchedule, scheduleTypeEnum
-# from globals.column_names import BOA_DESC_COL
+# from globals.column_names import DESC_COL
 
 
 # originalDataFrame = dataFrame
 # textProcessEnum = textProcessing.NonAlphaNumericCharRemoval
-# textProcessedDF = textProcessDF(dataFrame,textProcessEnum,BOA_DESC_COL)
-# processedDescriptionArray = textProcessedDF[BOA_DESC_COL].to_numpy()
+# textProcessedDF = textProcessDF(dataFrame,textProcessEnum,DESC_COL)
+# processedDescriptionArray = textProcessedDF[DESC_COL].to_numpy()
 # binerPredicate = None
 # optionsDict = {'firstNchar': 6,
 #                 'lastNchar': 4,
