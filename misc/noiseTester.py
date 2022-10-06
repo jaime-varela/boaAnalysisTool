@@ -7,8 +7,7 @@ from analasisAPI.plotUtilities import plotDataFrameTimeSeriesCol
 import datetime
 
 
-from analasisAPI.bankUtils import combineBOAfiles
-from analasisAPI.fileLoader import BOA_DATE_COL,BOA_AMNT_COL
+from analasisAPI.fileLoader import DATE_COL,AMNT_COL
 
 file1 = "/home/jaimevrl/Documents/Finance/stmt.csv"
 import matplotlib.pyplot as plt
@@ -18,14 +17,14 @@ from pandas.plotting import autocorrelation_plot
 dataFrame = LoadFile(file1)
 
 dataFrame = filterDataFrameByRegex(dataFrame,"audible")
-dataFrame = dataFrame.sort_values(by=BOA_DATE_COL)
+dataFrame = dataFrame.sort_values(by=DATE_COL)
 
 import numpy as np
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
-timeData = dataFrame[[BOA_DATE_COL,BOA_AMNT_COL]]
-tseries = timeData.set_index(BOA_DATE_COL)
+timeData = dataFrame[[DATE_COL,AMNT_COL]]
+tseries = timeData.set_index(DATE_COL)
 print(tseries)
 # acorr = sm.tsa.stattools.acf(timeData)
 from matplotlib import pyplot

@@ -1,6 +1,6 @@
 from textblob.classifiers import NaiveBayesClassifier
 import pandas as pd
-from globals.column_names import BAYES_TRAINING_CLASS_COL,BAYES_TRAINING_DESCRIPTION_COL, BOA_DESC_COL
+from globals.column_names import BAYES_TRAINING_CLASS_COL,BAYES_TRAINING_DESCRIPTION_COL, DESC_COL
 
 def classify_using_naive_bayes(input_df,training_file=None):
 
@@ -19,7 +19,7 @@ def classify_using_naive_bayes(input_df,training_file=None):
     classifications = []
     classified_df = input_df
     for ind, row in input_df.iterrows():
-        desc = row[BOA_DESC_COL]
+        desc = row[DESC_COL]
         classification = classifier.classify(desc)
         classifications.append(classification)
     classified_df['class'] = classifications

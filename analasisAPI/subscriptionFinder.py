@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
-from .fileLoader import BOA_DATE_COL, BOA_DESC_COL, BOA_AMNT_COL
+from globals.column_names import DATE_COL, DESC_COL, AMNT_COL
 register_matplotlib_converters()
 
 # it has been decided that using auto-correlation and other tools is not beneficial for schedule finding for this data set type
@@ -292,18 +292,18 @@ def dataFrameSchedule(groupedDF):
     if len(groupedDF.index) <= 2:
         return (scheduleTypeEnum.NoSchedule,[])
     # get the average of difference in time of the data frame
-    isDaily = isDFdailySchedule(groupedDF, BOA_DATE_COL)
+    isDaily = isDFdailySchedule(groupedDF, DATE_COL)
     
-    isWeekly = isDFweeklySchedule(groupedDF,BOA_DATE_COL)
+    isWeekly = isDFweeklySchedule(groupedDF,DATE_COL)
 
-    isMonthly = isDFMonthlySchedule(groupedDF,BOA_DATE_COL)
+    isMonthly = isDFMonthlySchedule(groupedDF,DATE_COL)
 
     if isDaily:
-        return (scheduleTypeEnum.Daily,dailyDFSchedule(groupedDF,BOA_DATE_COL))
+        return (scheduleTypeEnum.Daily,dailyDFSchedule(groupedDF,DATE_COL))
     elif isWeekly:
-        return (scheduleTypeEnum.Weekly,weeklyDFSchedule(groupedDF,BOA_DATE_COL))
+        return (scheduleTypeEnum.Weekly,weeklyDFSchedule(groupedDF,DATE_COL))
     elif isMonthly:
-        return (scheduleTypeEnum.Monthly,monthlyDFSchedule(groupedDF,BOA_DATE_COL))
+        return (scheduleTypeEnum.Monthly,monthlyDFSchedule(groupedDF,DATE_COL))
     else:
         return (scheduleTypeEnum.NoSchedule,[])
 
@@ -323,8 +323,8 @@ def extractDFfromStringIndexPairs(dataFrame, stringIndexPairs):
 def getSchedules(dataFrame, textProcessEnum, groupAlgoEnum ,optionsDict):
 
     originalDataFrame = dataFrame
-    textProcessedDF = textProcessDF(dataFrame,textProcessEnum,BOA_DESC_COL)
-    processedDescriptionArray = textProcessedDF[BOA_DESC_COL].to_numpy()
+    textProcessedDF = textProcessDF(dataFrame,textProcessEnum,DESC_COL)
+    processedDescriptionArray = textProcessedDF[DESC_COL].to_numpy()
     binerPredicate = None
     # TODO: pass in options
     if groupAlgoEnum == groupingAlgorithm.FirstNdigits:
@@ -353,8 +353,8 @@ def getRepresentativeDFfromSchedules(scheduledDataFrames):
     columns = SCHEDULE_COLUMNS
     dataValues = []
     for scheduleEntry in scheduledDataFrames:
-        description = scheduleEntry[1][BOA_DESC_COL].iloc[0]
-        datum = [description,scheduleEntry[0][0],scheduleEntry[1][BOA_AMNT_COL].mean(),scheduleEntry[0][1]]
+        description = scheduleEntry[1][DESC_COL].iloc[0]
+        datum = [description,scheduleEntry[0][0],scheduleEntry[1][AMNT_COL].mean(),scheduleEntry[0][1]]
         dataValues.append(datum)
     return pd.DataFrame(dataValues,columns=columns)
 

@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
-from globals.column_names import BOA_BAL_COL,BOA_AMNT_COL,BOA_DATE_COL,BOA_DESC_COL,BOA_SUMMARY_CONST
-from .bankUtils import isBoaFile, isChaseFile ,isBoaCreditFile
-from .bankUtils import LoadBoaCreditFile,LoadBoaFile,LoadChaseFile
+from .bankUtils import isBoaDebitFile, isChaseFile ,isBoaCreditFile
+from .bankUtils import LoadBoaCreditFile,LoadBoaDebitFile,LoadChaseFile
 
 
 def npNum2Str(number):
@@ -10,7 +9,7 @@ def npNum2Str(number):
 
 
 
-bankPredicateLoadActionPairs = [(isBoaFile,LoadBoaFile),
+bankPredicateLoadActionPairs = [(isBoaDebitFile,LoadBoaDebitFile),
     (isChaseFile,LoadChaseFile),(isBoaCreditFile,LoadBoaCreditFile)]
 
 # the current BOA file has six useless rows so we do not read those
