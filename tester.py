@@ -73,31 +73,31 @@ classified_df.to_csv("training_data.csv",index=False)
 
 # %%
 # Analyze the data frame schedules
-# from analasisAPI.subscriptionFinder import textProcessDF, textProcessing,NcharMatch, binStringObjectsByPredicate
-# from analasisAPI.subscriptionFinder import extractDFfromStringIndexPairs, dataFrameSchedule, scheduleTypeEnum
-# from globals.column_names import DESC_COL
+from analasisAPI.subscriptionFinder import textProcessDF, textProcessing,NcharMatch, binStringObjectsByPredicate
+from analasisAPI.subscriptionFinder import extractDFfromStringIndexPairs, dataFrameSchedule, scheduleTypeEnum
+from globals.column_names import DESC_COL
 
 
-# originalDataFrame = dataFrame
-# textProcessEnum = textProcessing.NonAlphaNumericCharRemoval
-# textProcessedDF = textProcessDF(dataFrame,textProcessEnum,DESC_COL)
-# processedDescriptionArray = textProcessedDF[DESC_COL].to_numpy()
-# binerPredicate = None
-# optionsDict = {'firstNchar': 6,
-#                 'lastNchar': 4,
-#                 'similarity': 80.0}
+originalDataFrame = dataFrame
+textProcessEnum = textProcessing.NonAlphaNumericCharRemoval
+textProcessedDF = textProcessDF(dataFrame,textProcessEnum,DESC_COL)
+processedDescriptionArray = textProcessedDF[DESC_COL].to_numpy()
+binerPredicate = None
+optionsDict = {'firstNchar': 6,
+                'lastNchar': 4,
+                'similarity': 80.0}
 
-# binerPredicate = lambda x,y: NcharMatch(x,y,nChars=optionsDict['firstNchar'])
-# binnedStringsAndIndeces = binStringObjectsByPredicate(processedDescriptionArray,binerPredicate)
+binerPredicate = lambda x,y: NcharMatch(x,y,nChars=optionsDict['firstNchar'])
+binnedStringsAndIndeces = binStringObjectsByPredicate(processedDescriptionArray,binerPredicate)
 
-# scheduledDataFrames = []
-# for binEntry in binnedStringsAndIndeces:
-#     intermediateDataFrame = extractDFfromStringIndexPairs(originalDataFrame,binEntry)
-#     schedule = dataFrameSchedule(intermediateDataFrame)
+scheduledDataFrames = []
+for binEntry in binnedStringsAndIndeces:
+    intermediateDataFrame = extractDFfromStringIndexPairs(originalDataFrame,binEntry)
+    schedule = dataFrameSchedule(intermediateDataFrame)
 
-#     if schedule[0] != scheduleTypeEnum.NoSchedule:
-#         print(intermediateDataFrame.iloc[0])
-#         scheduledDataFrames.append((schedule,intermediateDataFrame))
+    if schedule[0] != scheduleTypeEnum.NoSchedule:
+        print(intermediateDataFrame.iloc[0])
+        scheduledDataFrames.append((schedule,intermediateDataFrame))
 
 # %%
 classified_df.head()
@@ -108,4 +108,23 @@ classification_pi_chart(classified_df)
 # %%
 
 
+# %%
+from datetime import date
+
+d0 = date(2008, 8, 18)
+d1 = date(2008, 9, 21)
+delta = d1 - d0
+print(delta.days)
+
+# %%
+dayOfWeek_enum = 3
+first_week_day = 4
+for ind in range(16):
+    print((ind - (dayOfWeek_enum - first_week_day) ) % 7)
+# %%
+from analasisAPI.dateUtils import WeekDay, day_array_for_weekly_schedule
+
+day_array_for_weekly_schedule(d0,d1,WeekDay.MONDAY)
+# %%
+d0 < d1
 # %%
